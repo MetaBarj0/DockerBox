@@ -1,5 +1,7 @@
 #!/bin/sh
 
+rm -rf /root/provisioning
+
 if [ $RM_PACMAN_SYNC_DB -eq 1 ]; then
   db_dir=/var/lib/pacman/sync
 
