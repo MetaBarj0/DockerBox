@@ -51,6 +51,8 @@ Vagrant.configure("2") do |config|
                                  "ZONEINFO_CITY" => fetch_env_with_default('ZONEINFO_CITY', ''),
                                  "LOCALES" => fetch_env_with_default('LOCALES', 'en_US.UTF-8'),
                                  "LCLANG" => fetch_env_with_default('LCLANG', 'en_US.UTF-8'),
-                                 "KEYMAP" => fetch_env_with_default('KEYMAP', 'us')
+                                 "KEYMAP" => fetch_env_with_default('KEYMAP', 'us'),
+                                 "RM_PACMAN_SYNC_DB" => fetch_env_with_default('RM_PACMAN_SYNC_DB', 0),
+                                 "VACUUM_JOURNAL_ARCHIVE" => fetch_env_with_default('VACUUM_JOURNAL_ARCHIVE', 0)
                                }
 end
