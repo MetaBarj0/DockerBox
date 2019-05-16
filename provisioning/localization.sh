@@ -64,8 +64,8 @@ function setup_locales() {
 }
 
 function setup_lang_and_keymap() {
-  if [ ! -z "$LANG" ]; then
-    echo "LANG=$LANG" > /etc/locale.conf
+  if [ ! -z "$LCLANG" ]; then
+    echo "LANG=$LCLANG" > /etc/locale.conf
   fi
 
   if [ ! -z "$KEYMAP" ]; then

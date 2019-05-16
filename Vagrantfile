@@ -50,7 +50,7 @@ Vagrant.configure("2") do |config|
                                  "ZONEINFO_REGION" => fetch_env_with_default('ZONEINFO_REGION', 'UTC'),
                                  "ZONEINFO_CITY" => fetch_env_with_default('ZONEINFO_CITY', ''),
                                  "LOCALES" => fetch_env_with_default('LOCALES', 'en_US.UTF-8'),
-                                 "LANG" => fetch_env_with_default('LANG', 'en_US'),
+                                 "LCLANG" => fetch_env_with_default('LCLANG', 'en_US.UTF-8'),
                                  "KEYMAP" => fetch_env_with_default('KEYMAP', 'us')
                                }
 end
