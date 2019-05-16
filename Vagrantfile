@@ -20,6 +20,7 @@ Vagrant.configure("2") do |config|
 
   if not FileTest::file?('./.env')
     puts "Information, no '.env' file found. Default value wile be used."
+    puts "Consider to create your own .env file from the .env.dist template"
   end
   
   # utility to fetch environmental with a default value
@@ -47,6 +48,9 @@ Vagrant.configure("2") do |config|
                                {
                                  "NTP_SYNC" => fetch_env_with_default('NTP_SYNC', 1),
                                  "ZONEINFO_REGION" => fetch_env_with_default('ZONEINFO_REGION', 'UTC'),
-                                 "ZONEINFO_CITY" => fetch_env_with_default('ZONEINFO_CITY', '')
+                                 "ZONEINFO_CITY" => fetch_env_with_default('ZONEINFO_CITY', ''),
+                                 "LOCALES" => fetch_env_with_default('LOCALES', 'en_US.UTF-8'),
+                                 "LANG" => fetch_env_with_default('LANG', 'en_US'),
+                                 "KEYMAP" => fetch_env_with_default('KEYMAP', 'us')
                                }
 end
