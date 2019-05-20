@@ -8,8 +8,6 @@ template. Each variable's purpose is described as a comment.
 
 ## login
 There is 3 accounts :
-| login   | password |
-|:-------:|:--------:|
-| root    | vagrant  |
-| vagrant | vagrant  |
-| docker  | docker   |
+- root    => vagrant  
+- vagrant => vagrant  
+- docker  => docker   
