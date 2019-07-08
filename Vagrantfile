@@ -1,4 +1,13 @@
 Vagrant.configure("2") do |config|
+  # ensuring windows hyper-v optional features are disabled when bringing up the machine
+  if ARGV[0] == "up"
+    if Vagrant::Util::Platform.windows? then
+      if not system "powershell -ExecutionPolicy ByPass ./WindowsHyperVDeactivation.ps1"
+        abort "Windows hyper-v deactivation has failed. Aborting."
+      end
+    end
+  end
+
   config.vm.box = "metabarj0/DockerBox"
   config.vm.box_version = "1.0.0"
 
