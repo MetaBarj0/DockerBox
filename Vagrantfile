@@ -9,7 +9,6 @@ Vagrant.configure("2") do |config|
   end
 
   config.vm.box = "metabarj0/DockerBox"
-  config.vm.box_version = "1.0.0"
 
   required_plugins = %w(vagrant-env)
 
