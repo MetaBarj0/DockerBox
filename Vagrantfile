@@ -62,6 +62,8 @@ Vagrant.configure("2") do |config|
                                  "KEYMAP" => fetch_env_with_default('KEYMAP', 'us'),
                                  "RM_PACMAN_SYNC_DB" => fetch_env_with_default('RM_PACMAN_SYNC_DB', 0),
                                  "VACUUM_JOURNAL_ARCHIVE" => fetch_env_with_default('VACUUM_JOURNAL_ARCHIVE', 0),
+                                 "EXTRA_PACMAN_REPOSITORIES" => fetch_env_with_default('EXTRA_PACMAN_REPOSITORIES', ''),
+                                 "EXTRA_PACMAN_KEYS" => fetch_env_with_default('EXTRA_PACMAN_KEYS', ''),
                                  "EXTRA_PACKAGES" => fetch_env_with_default('EXTRA_PACKAGES', '')
                                }
 end
