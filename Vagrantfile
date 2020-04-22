@@ -9,17 +9,37 @@ Vagrant.configure("2") do |config|
   end
 
   config.vm.box = "metabarj0/DockerBox"
+  config.vm.box_version = ">= 1.0.2, < 1.1"
 
-  required_plugins = %w(vagrant-env)
+  def repair_plugin_dependencies()
+    if system "vagrant plugin list"
+      return true
+    end
+
+    if not system "vagrant plugin repair"
+      return system "vagrant plugin expunge --reinstall "
+    end
+
+    return true
+  end
+
+  def install_plugin_dependencies(plugins)
+    repair_plugin_dependencies()
+
+    system "vagrant plugin install #{plugins.join(' ')}"
+    system "vagrant plugin update"
+  end
 
   # install all required plugins then, restart vagrant process
+  required_plugins = %w(vagrant-vbguest vagrant-env)
   plugins_to_install = required_plugins.select { |plugin| not Vagrant.has_plugin? plugin }
+
   if not plugins_to_install.empty?
-    puts "Installing plugins: #{plugins_to_install.join(' ')}"
-    if system "vagrant plugin install #{plugins_to_install.join(' ')}"
+    puts "Installing required plugins: #{plugins_to_install.join(' ')}"
+    if install_plugin_dependencies(plugins_to_install)
       exec "vagrant #{ARGV.join(' ')}"
     else
-      abort "Installation of one or more plugins has failed. Aborting."
+      abort "Installation of one or more required plugins has failed. Aborting."
     end
   end
 
@@ -35,10 +55,26 @@ Vagrant.configure("2") do |config|
   def fetch_env_with_default(key, default)
     return (ENV.has_key?(key) && ENV[key] != "") ? ENV[key] : default
   end
-  
+
   $vagrant_provider = fetch_env_with_default('VAGRANT_DEFAULT_PROVIDER', 'virtualbox')
 
-  # this machine is only useable with hyperv provider
+  # install all extra plugins then, restart vagrant process
+  extra_plugins = fetch_env_with_default('VAGRANT_EXTRA_PLUGINS', '')
+
+  extra_plugins_to_install = ''
+  if not extra_plugins.empty?
+    extra_plugins_to_install = extra_plugins.select { |plugin| not Vagrant.has_plugin? plugin }
+  end
+
+  if not extra_plugins_to_install.empty?
+    puts "Installing extra plugins: #{extra_plugins_to_install.join(' ')}"
+    if install_plugin_dependencies(extra_plugins_to_install)
+      exec "vagrant #{ARGV.join(' ')}"
+    else
+      abort "Installation of one or more extra plugins has failed. Aborting."
+    end
+  end
+
   if $vagrant_provider != "virtualbox"
     abort "Cannot up DockerBox with the #{$vagrant_provider} provider. Only 'virtualbox' provider is supported"
   end
