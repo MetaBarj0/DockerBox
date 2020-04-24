@@ -8,10 +8,8 @@ Vagrant.configure("2") do |config|
     end
   end
 
-  # TODO - replace with real box asap
-  config.vm.box = "[TEST]DockerBox"
-  # config.vm.box = "metabarj0/DockerBox"
-  # config.vm.box_version = ">= 1.0.2, < 1.1"
+  config.vm.box = "metabarj0/DockerBox"
+  config.vm.box_version = ">= 2.0.0"
 
   def repair_plugin_dependencies()
     if system "vagrant plugin list"
