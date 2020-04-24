@@ -6,11 +6,8 @@ target=/root/provisioning
 mkdir -p "$target"
 
 cp "${source}/playbook.sh" \
-   "${source}/timesync.sh" \
    "${source}/localization.sh" \
-   "${source}/docker_user.sh" \
    "${source}/extra_packages.sh" \
-   "${source}/install_extra_pacman_repositories.sh" \
    "${source}/cleanup.sh" \
    "${target}"
 

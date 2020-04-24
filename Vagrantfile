@@ -8,8 +8,10 @@ Vagrant.configure("2") do |config|
     end
   end
 
-  config.vm.box = "metabarj0/DockerBox"
-  config.vm.box_version = ">= 1.0.2, < 1.1"
+  # TODO - replace with real box asap
+  config.vm.box = "[TEST]DockerBox"
+  # config.vm.box = "metabarj0/DockerBox"
+  # config.vm.box_version = ">= 1.0.2, < 1.1"
 
   def repair_plugin_dependencies()
     if system "vagrant plugin list"
@@ -90,16 +92,10 @@ Vagrant.configure("2") do |config|
   config.vm.provision "shell", path: "provisioning/provision-from-host.sh",
                                env:
                                {
-                                 "NTP_SYNC" => fetch_env_with_default('NTP_SYNC', 1),
                                  "ZONEINFO_REGION" => fetch_env_with_default('ZONEINFO_REGION', 'UTC'),
                                  "ZONEINFO_CITY" => fetch_env_with_default('ZONEINFO_CITY', ''),
-                                 "LOCALES" => fetch_env_with_default('LOCALES', 'en_US.UTF-8'),
-                                 "LCLANG" => fetch_env_with_default('LCLANG', 'en_US.UTF-8'),
                                  "KEYMAP" => fetch_env_with_default('KEYMAP', 'us'),
-                                 "RM_PACMAN_SYNC_DB" => fetch_env_with_default('RM_PACMAN_SYNC_DB', 0),
-                                 "VACUUM_JOURNAL_ARCHIVE" => fetch_env_with_default('VACUUM_JOURNAL_ARCHIVE', 0),
-                                 "EXTRA_PACMAN_REPOSITORIES" => fetch_env_with_default('EXTRA_PACMAN_REPOSITORIES', ''),
-                                 "EXTRA_PACMAN_KEYS" => fetch_env_with_default('EXTRA_PACMAN_KEYS', ''),
+                                 "KEYMAP_VARIANT" => fetch_env_with_default('KEYMAP_VARIANT', 'us'),
                                  "EXTRA_PACKAGES" => fetch_env_with_default('EXTRA_PACKAGES', '')
                                }
 end

@@ -1,7 +1,7 @@
 # DockerBox
 
-Archlinux base image with docker. Customizable provisioning.
-https://app.vagrantup.com/metabarj0/boxes/DockerBox/versions/1.0.2 is the currently supported version
+Alpine Linux based image with docker. Customizable provisioning.
+https://app.vagrantup.com/metabarj0/boxes/DockerBox/versions/2.0.0 is the currently supported version.
 
 ## configuration
 

@@ -1,5 +1,5 @@
 #!/bin/sh
 
 if [ ! -z "$EXTRA_PACKAGES" ]; then
-  pacman -Syuq --noconfirm $EXTRA_PACKAGES
+  apk add -U --quiet $EXTRA_PACKAGES
 fi
