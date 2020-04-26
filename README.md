@@ -15,3 +15,8 @@ There is 3 accounts :
 - root    => vagrant  
 - vagrant => vagrant  
 - docker  => docker
+
+# TODO
+
+- change default storage controller to NVMe
+- add provisionning feature aiming to facilitate disk expansion using LVM
