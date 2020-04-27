@@ -1,6 +1,6 @@
 Vagrant.configure("2") do |config|
   # ensuring windows hyper-v optional features are disabled when bringing up the machine
-  if ARGV[0] == "up"
+  if (ARGV[0] == "up" || ARGV[0] == "reload")
     if Vagrant::Util::Platform.windows? then
       if not system "powershell -ExecutionPolicy ByPass ./WindowsHyperVDeactivation.ps1"
         abort "Windows hyper-v deactivation has failed. Aborting."
@@ -56,8 +56,6 @@ Vagrant.configure("2") do |config|
     return (ENV.has_key?(key) && ENV[key] != "") ? ENV[key] : default
   end
 
-  $vagrant_provider = fetch_env_with_default('VAGRANT_DEFAULT_PROVIDER', 'virtualbox')
-
   # install all extra plugins then, restart vagrant process
   extra_plugins = fetch_env_with_default('VAGRANT_EXTRA_PLUGINS', '')
 
@@ -75,9 +73,13 @@ Vagrant.configure("2") do |config|
     end
   end
 
-  if $vagrant_provider != "virtualbox"
-    abort "Cannot up DockerBox with the #{$vagrant_provider} provider. Only 'virtualbox' provider is supported"
+  vagrant_provider = fetch_env_with_default('VAGRANT_DEFAULT_PROVIDER', 'virtualbox')
+
+  if vagrant_provider != "virtualbox"
+    abort "Cannot up DockerBox with the #{vagrant_provider} provider. Only 'virtualbox' provider is supported"
   end
+
+  config.vm.network "public_network"
 
   # virtualbox provider specific configuration with defaults
   config.vm.provider "virtualbox" do |v|
