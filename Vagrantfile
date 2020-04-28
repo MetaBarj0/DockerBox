@@ -61,7 +61,7 @@ Vagrant.configure("2") do |config|
 
   extra_plugins_to_install = ''
   if not extra_plugins.empty?
-    extra_plugins_to_install = extra_plugins.select { |plugin| not Vagrant.has_plugin? plugin }
+    extra_plugins_to_install = extra_plugins.split.select { |plugin| not Vagrant.has_plugin? plugin }
   end
 
   if not extra_plugins_to_install.empty?
@@ -80,6 +80,16 @@ Vagrant.configure("2") do |config|
   end
 
   config.vm.network "public_network"
+
+  machine_forwarded_ports = fetch_env_with_default('MACHINE_FORWARDED_PORTS', '')
+  if not machine_forwarded_ports.empty?
+    forwarded_port_rules = machine_forwarded_ports.split(';')
+    forwarded_port_rules.each { |rule|
+      elements = rule.split
+
+      config.vm.network "forwarded_port", guest: elements[1], host: elements[0], protocol: elements[2]
+    }
+  end
 
   # virtualbox provider specific configuration with defaults
   config.vm.provider "virtualbox" do |v|
