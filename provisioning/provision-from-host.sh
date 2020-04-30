@@ -8,6 +8,7 @@ mkdir -p "$target"
 cp "${source}/playbook.sh" \
    "${source}/localization.sh" \
    "${source}/extra_packages.sh" \
+   "${source}/extend_docker_storage.sh" \
    "${source}/cleanup.sh" \
    "${target}"
 
