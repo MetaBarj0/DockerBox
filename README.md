@@ -18,5 +18,4 @@ There is 3 accounts :
 
 ## TODO
 
-- change default storage controller to NVMe
-- add provisionning feature aiming to facilitate disk expansion using LVM
+- add provisionning feature aiming to facilitate disk expansion using LVM only for docker mount point

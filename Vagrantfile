@@ -9,7 +9,7 @@ Vagrant.configure("2") do |config|
   end
 
   config.vm.box = "metabarj0/DockerBox"
-  config.vm.box_version = ">= 2.0.0"
+  config.vm.box_version = ">= 2.0.1"
 
   def repair_plugin_dependencies()
     if system "vagrant plugin list"
