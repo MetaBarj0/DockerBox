@@ -1,5 +1,7 @@
 #!/bin/sh
 
+[ $DOCKER_VOLUME_AUTO_EXTEND -ne 1 ] && exit 0
+
 # resizing existing volumes
 pvs -S 'vg_name=vg_docker' -o pv_name --noheadings | xargs pvresize
 lvs -S 'lv_name=lv_docker' -o lv_path --noheadings | xargs lvresize -r -l +100%FREE

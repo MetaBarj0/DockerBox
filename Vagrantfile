@@ -106,6 +106,7 @@ Vagrant.configure("2") do |config|
                                  "ZONEINFO_CITY" => fetch_env_with_default('ZONEINFO_CITY', ''),
                                  "KEYMAP" => fetch_env_with_default('KEYMAP', 'us'),
                                  "KEYMAP_VARIANT" => fetch_env_with_default('KEYMAP_VARIANT', 'us'),
-                                 "EXTRA_PACKAGES" => fetch_env_with_default('EXTRA_PACKAGES', '')
+                                 "EXTRA_PACKAGES" => fetch_env_with_default('EXTRA_PACKAGES', ''),
+                                 "DOCKER_VOLUME_AUTO_EXTEND" => fetch_env_with_default('DOCKER_VOLUME_AUTO_EXTEND', 1)
                                }
 end
