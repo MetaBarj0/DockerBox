@@ -94,6 +94,16 @@ Vagrant.configure("2") do |config|
     }
   end
 
+  machine_synced_folders = fetch_env_with_default('MACHINE_SYNCED_FOLDERS', '')
+  if not machine_synced_folders.empty?
+    machine_synced_folder_list = machine_synced_folders.split(';')
+    machine_synced_folder_list.each { |folder|
+      elements = folder.split
+
+      config.vm.synced_folder elements[0], elements[1]
+    }
+  end
+
   # virtualbox provider specific configuration with defaults
   config.vm.provider "virtualbox" do |v|
     v.customize ["modifyvm", :id, "--cpus", fetch_env_with_default('MACHINE_CPU', 1)]
