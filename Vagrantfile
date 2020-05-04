@@ -79,7 +79,10 @@ Vagrant.configure("2") do |config|
     abort "Cannot up DockerBox with the #{vagrant_provider} provider. Only 'virtualbox' provider is supported"
   end
 
-  config.vm.network "public_network"
+  create_public_network = fetch_env_with_default('MACHINE_CREATE_PUBLIC_NETWORK', 0)
+  if create_public_network == 1
+    config.vm.network "public_network"
+  end
 
   machine_forwarded_ports = fetch_env_with_default('MACHINE_FORWARDED_PORTS', '')
   if not machine_forwarded_ports.empty?
