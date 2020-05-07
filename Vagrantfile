@@ -120,6 +120,8 @@ Vagrant.configure("2") do |config|
                                  "KEYMAP" => fetch_env_with_default('KEYMAP', 'us'),
                                  "KEYMAP_VARIANT" => fetch_env_with_default('KEYMAP_VARIANT', 'us'),
                                  "EXTRA_PACKAGES" => fetch_env_with_default('EXTRA_PACKAGES', ''),
-                                 "DOCKER_VOLUME_AUTO_EXTEND" => fetch_env_with_default('DOCKER_VOLUME_AUTO_EXTEND', 1)
+                                 "DOCKER_VOLUME_AUTO_EXTEND" => fetch_env_with_default('DOCKER_VOLUME_AUTO_EXTEND', 1),
+                                 "SSH_SECRET_KEY" => fetch_env_with_default('SSH_SECRET_KEY', ''),
+                                 "SSH_PUBLIC_KEY" => fetch_env_with_default('SSH_PUBLIC_KEY', '')
                                }
 end
