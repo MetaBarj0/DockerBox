@@ -80,7 +80,7 @@ Vagrant.configure("2") do |config|
   end
 
   create_public_network = fetch_env_with_default('MACHINE_CREATE_PUBLIC_NETWORK', 0)
-  if create_public_network == 1
+  if create_public_network == '1'
     config.vm.network "public_network"
   end
 
