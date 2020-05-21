@@ -8,9 +8,6 @@ Vagrant.configure("2") do |config|
     end
   end
 
-  config.vm.box = "metabarj0/DockerBox"
-  config.vm.box_version = ">= 2.0.1"
-
   def repair_plugin_dependencies()
     if system "vagrant plugin list"
       return true
@@ -78,6 +75,12 @@ Vagrant.configure("2") do |config|
   if vagrant_provider != "virtualbox"
     abort "Cannot up DockerBox with the #{vagrant_provider} provider. Only 'virtualbox' provider is supported"
   end
+
+  config.vm.box = "metabarj0/DockerBox"
+  config.vm.box_version = ">= 2.0.1"
+
+  hostname = fetch_env_with_default('MACHINE_HOSTNAME', 'docker-box')
+  config.vm.hostname = hostname
 
   create_public_network = fetch_env_with_default('MACHINE_CREATE_PUBLIC_NETWORK', 0)
   if create_public_network == '1'
