@@ -77,13 +77,14 @@ Vagrant.configure("2") do |config|
   end
 
   multi_machines = fetch_env_with_default('MULTI_MACHINES', '')
-  multi_machine_ips = [ '' ]
+  multi_machine_ips = [ '' ] # by default one machine, without any IP
   if not multi_machines.empty?
     multi_machine_ips = multi_machines.split
   end
 
   is_multi_machine_enabled = multi_machine_ips.length() > 1
 
+  # vagrant bug : the public_network support is broken, do not use
   multi_machines_create_public_network = fetch_env_with_default('MULTI_MACHINES_CREATE_PUBLIC_NETWORK', '0')
   is_multi_machine_public_network_enabled = ( multi_machines_create_public_network == '1' )
 
@@ -107,11 +108,13 @@ Vagrant.configure("2") do |config|
         machine.vm.hostname = "#{hostname}-#{multi_machine_index}"
       end
 
+      # vagrant bug : not supported but should work as soon as vagrant has fixed its stuff
       create_public_network = fetch_env_with_default('MACHINE_CREATE_PUBLIC_NETWORK', '0')
       if ( ( create_public_network == '1' ) && ( multi_machine_index == 0 ) ) || ( ( multi_machine_index > 0 ) && is_multi_machine_public_network_enabled )
         machine.vm.network "public_network"
       end
 
+      # forwarding only applies on the first machine
       if (multi_machine_index == 0)
         machine_forwarded_ports = fetch_env_with_default('MACHINE_FORWARDED_PORTS', '')
         if not machine_forwarded_ports.empty?
