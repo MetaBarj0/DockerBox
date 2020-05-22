@@ -76,55 +76,91 @@ Vagrant.configure("2") do |config|
     abort "Cannot up DockerBox with the #{vagrant_provider} provider. Only 'virtualbox' provider is supported"
   end
 
-  config.vm.box = "metabarj0/DockerBox"
-  config.vm.box_version = ">= 2.0.1"
-
-  hostname = fetch_env_with_default('MACHINE_HOSTNAME', 'docker-box')
-  config.vm.hostname = hostname
-
-  create_public_network = fetch_env_with_default('MACHINE_CREATE_PUBLIC_NETWORK', 0)
-  if create_public_network == '1'
-    config.vm.network "public_network"
+  multi_machines = fetch_env_with_default('MULTI_MACHINES', '')
+  multi_machine_ips = [ '' ]
+  if not multi_machines.empty?
+    multi_machine_ips = multi_machines.split
   end
 
-  machine_forwarded_ports = fetch_env_with_default('MACHINE_FORWARDED_PORTS', '')
-  if not machine_forwarded_ports.empty?
-    forwarded_port_rules = machine_forwarded_ports.split(';')
-    forwarded_port_rules.each { |rule|
-      elements = rule.split
+  is_multi_machine_enabled = multi_machine_ips.length() > 1
 
-      config.vm.network "forwarded_port", guest: elements[1], host: elements[0], protocol: elements[2]
-    }
+  multi_machines_create_public_network = fetch_env_with_default('MULTI_MACHINES_CREATE_PUBLIC_NETWORK', '0')
+  is_multi_machine_public_network_enabled = ( multi_machines_create_public_network == '1' )
+
+  multi_machines_share_synced_folders = fetch_env_with_default('MULTI_MACHINES_SHARE_SYNCED_FOLDERS', '0')
+  are_multi_machine_sharing_synced_folders = ( multi_machines_share_synced_folders == '1' )
+
+  multi_machine_ips.each_with_index do |ip, multi_machine_index|
+    machine_name = 'default'
+    if is_multi_machine_enabled
+      machine_name = "machine-#{multi_machine_index}"
+    end
+
+    config.vm.define "#{machine_name}" do |machine|
+      machine.vm.box = "metabarj0/DockerBox"
+      machine.vm.box_version = ">= 2.0.1"
+
+      hostname = fetch_env_with_default('MACHINE_HOSTNAME', 'docker-box')
+      machine.vm.hostname = hostname
+
+      if is_multi_machine_enabled
+        machine.vm.hostname = "#{hostname}-#{multi_machine_index}"
+      end
+
+      create_public_network = fetch_env_with_default('MACHINE_CREATE_PUBLIC_NETWORK', '0')
+      if ( ( create_public_network == '1' ) && ( multi_machine_index == 0 ) ) || ( ( multi_machine_index > 0 ) && is_multi_machine_public_network_enabled )
+        machine.vm.network "public_network"
+      end
+
+      if (multi_machine_index == 0)
+        machine_forwarded_ports = fetch_env_with_default('MACHINE_FORWARDED_PORTS', '')
+        if not machine_forwarded_ports.empty?
+          forwarded_port_rules = machine_forwarded_ports.split(';')
+          forwarded_port_rules.each { |rule|
+            elements = rule.split
+
+            machine.vm.network "forwarded_port", guest: elements[1], host: elements[0], protocol: elements[2]
+          }
+        end
+      end
+
+      machine_synced_folders = fetch_env_with_default('MACHINE_SYNCED_FOLDERS', '')
+      if not machine_synced_folders.empty?
+        if (  multi_machine_index == 0 ) || are_multi_machine_sharing_synced_folders
+          machine_synced_folder_list = machine_synced_folders.split(';')
+          machine_synced_folder_list.each { |folder|
+            elements = folder.split
+
+            machine.vm.synced_folder elements[0], elements[1]
+          }
+        end
+      end
+
+      if is_multi_machine_enabled
+        machine.vm.network "private_network", ip: "#{ip}"
+      end
+
+      # virtualbox provider specific configuration with defaults
+      machine.vm.provider "virtualbox" do |v|
+        v.customize ["modifyvm", :id, "--cpus", fetch_env_with_default('MACHINE_CPU', 1)]
+        v.customize ["modifyvm", :id, "--cpuexecutioncap", fetch_env_with_default('MACHINE_CPU_CAP', 100)]
+        v.customize ["modifyvm", :id, "--memory", fetch_env_with_default('MACHINE_MEM', 1024)]
+      end
+
+      # shell provisioning
+      machine.vm.provision "shell", path: "provisioning/provision-from-host.sh",
+                                env:
+                                {
+                                  "ZONEINFO_REGION" => fetch_env_with_default('ZONEINFO_REGION', 'UTC'),
+                                  "ZONEINFO_CITY" => fetch_env_with_default('ZONEINFO_CITY', ''),
+                                  "KEYMAP" => fetch_env_with_default('KEYMAP', 'us'),
+                                  "KEYMAP_VARIANT" => fetch_env_with_default('KEYMAP_VARIANT', 'us'),
+                                  "EXTRA_PACKAGES" => fetch_env_with_default('EXTRA_PACKAGES', ''),
+                                  "DOCKER_VOLUME_AUTO_EXTEND" => fetch_env_with_default('DOCKER_VOLUME_AUTO_EXTEND', 1),
+                                  "SSH_SECRET_KEY" => fetch_env_with_default('SSH_SECRET_KEY', ''),
+                                  "SSH_PUBLIC_KEY" => fetch_env_with_default('SSH_PUBLIC_KEY', '')
+                                }
+
+    end
   end
-
-  machine_synced_folders = fetch_env_with_default('MACHINE_SYNCED_FOLDERS', '')
-  if not machine_synced_folders.empty?
-    machine_synced_folder_list = machine_synced_folders.split(';')
-    machine_synced_folder_list.each { |folder|
-      elements = folder.split
-
-      config.vm.synced_folder elements[0], elements[1]
-    }
-  end
-
-  # virtualbox provider specific configuration with defaults
-  config.vm.provider "virtualbox" do |v|
-    v.customize ["modifyvm", :id, "--cpus", fetch_env_with_default('MACHINE_CPU', 1)]
-    v.customize ["modifyvm", :id, "--cpuexecutioncap", fetch_env_with_default('MACHINE_CPU_CAP', 100)]
-    v.customize ["modifyvm", :id, "--memory", fetch_env_with_default('MACHINE_MEM', 1024)]
-  end
-
-  # shell provisioning
-  config.vm.provision "shell", path: "provisioning/provision-from-host.sh",
-                               env:
-                               {
-                                 "ZONEINFO_REGION" => fetch_env_with_default('ZONEINFO_REGION', 'UTC'),
-                                 "ZONEINFO_CITY" => fetch_env_with_default('ZONEINFO_CITY', ''),
-                                 "KEYMAP" => fetch_env_with_default('KEYMAP', 'us'),
-                                 "KEYMAP_VARIANT" => fetch_env_with_default('KEYMAP_VARIANT', 'us'),
-                                 "EXTRA_PACKAGES" => fetch_env_with_default('EXTRA_PACKAGES', ''),
-                                 "DOCKER_VOLUME_AUTO_EXTEND" => fetch_env_with_default('DOCKER_VOLUME_AUTO_EXTEND', 1),
-                                 "SSH_SECRET_KEY" => fetch_env_with_default('SSH_SECRET_KEY', ''),
-                                 "SSH_PUBLIC_KEY" => fetch_env_with_default('SSH_PUBLIC_KEY', '')
-                               }
 end
