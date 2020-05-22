@@ -1,7 +1,8 @@
 # DockerBox
 
 Alpine Linux based image with docker. Customizable provisioning.
-<https://app.vagrantup.com/metabarj0/boxes/DockerBox/versions/2.0.1> is the currently supported version.
+<https://app.vagrantup.com/metabarj0/boxes/DockerBox/versions/2.0.1> is the
+currently supported version.
 
 ## configuration
 
@@ -27,3 +28,10 @@ You can use any storage controller you want.
 Then, ensure the environment variable `DOCKER_VOLUME_AUTO_EXTEND` is set to
 `1` in your `.env` file. Finally, run `vagrant provision` to auto extend the
 storage for docker according to virtual disk files you added or resized.
+
+## multi machine
+
+Multi machines configuration is fully supported (see
+<https://www.vagrantup.com/docs/multi-machine/)>).
+See in the `.env.dist` file configuration sections related to multi machine
+configuration for more information.
