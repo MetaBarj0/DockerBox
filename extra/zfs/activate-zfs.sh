@@ -1,5 +1,10 @@
 #!/bin/sh
 
+if [ $(whoami) != 'root' ]; then
+  echo 'This utility is meant to be run as root... Aborting.' 1>&2
+  exit 1
+fi
+
 script_dir="$(pwd -P $0)"
 
 cd "${script_dir}/docker"
