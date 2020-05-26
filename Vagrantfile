@@ -171,9 +171,11 @@ Vagrant.configure( "2" ) do | config |
       machine_name = "#{ vm_prefix }-#{ multi_machines_vm_prefix_map[ vm_prefix ] }"
     end
 
+    config.ssh.username = "docker"
+
     config.vm.define "#{ machine_name }" do | machine |
       machine.vm.box = "metabarj0/DockerBox"
-      machine.vm.box_version = ">= 2.1.1"
+      machine.vm.box_version = ">= 2.1.2"
 
       if is_multi_machine_enabled
         hostname_prefix = multi_machines_hostname_prefix_array[ multi_machine_index ]
