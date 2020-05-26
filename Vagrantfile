@@ -92,8 +92,6 @@ Vagrant.configure( "2" ) do | config |
   provision_keymap_variant            = fetch_env_with_default( 'KEYMAP_VARIANT', 'us' )
   provision_extra_packages            = fetch_env_with_default( 'EXTRA_PACKAGES', '' )
   provision_docker_volume_auto_extend = fetch_env_with_default( 'DOCKER_VOLUME_AUTO_EXTEND', 1 )
-  provision_ssh_secret_key            = fetch_env_with_default( 'SSH_SECRET_KEY', '' )
-  provision_ssh_public_key            = fetch_env_with_default( 'SSH_PUBLIC_KEY', '' )
 
   # multi-machine configuration from env
   multi_machines                       = fetch_env_with_default( 'MULTI_MACHINES', '' )
@@ -272,9 +270,7 @@ Vagrant.configure( "2" ) do | config |
                                       "KEYMAP"                    => provision_keymap,
                                       "KEYMAP_VARIANT"            => provision_keymap_variant,
                                       "EXTRA_PACKAGES"            => provision_extra_packages,
-                                      "DOCKER_VOLUME_AUTO_EXTEND" => provision_docker_volume_auto_extend,
-                                      "SSH_SECRET_KEY"            => provision_ssh_secret_key,
-                                      "SSH_PUBLIC_KEY"            => provision_ssh_public_key
+                                      "DOCKER_VOLUME_AUTO_EXTEND" => provision_docker_volume_auto_extend
                                     }
 
     end
