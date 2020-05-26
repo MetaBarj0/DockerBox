@@ -45,7 +45,7 @@ apk add zfs 1>/dev/null
 echo registering zfs services...
 rc-update add zfs-import boot 1>/dev/null
 rc-update add zfs-share boot 1>/dev/null
-rc-update add zfs-zed boot 1>/dev/null
+rc-update add zfs-zed boot shutdown 1>/dev/null
 rc-update add zfs-mount boot 1>/dev/null
 
 echo loading zfs module...

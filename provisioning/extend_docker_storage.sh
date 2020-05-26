@@ -13,11 +13,16 @@ devices=$(cat /proc/partitions | grep -E  'sd[a-z]+$|nvme[0-9]+n[0-9]+$' | sed -
 unused_devices=
 for d in $devices; do
   # mounted
-  cat /etc/mtab | grep $d 2>/dev/null 1>&2;
+  cat /etc/mtab | grep $d -q
   [ $? -eq 0 ] && continue;
 
   # used in LVM
-  pvs | grep $d 2>/dev/null 1>&2
+  pvs | grep $d -q
+  [ $? -eq 0 ] && continue;
+
+  # used in zfs
+  device_name=$(echo $d | sed 's%/dev/%%g')
+  zpool status | grep $device_name -q
   [ $? -ne 0 ] && unused_devices="$unused_devices $d"
 done
 
