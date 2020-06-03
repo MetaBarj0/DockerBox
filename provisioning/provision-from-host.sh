@@ -10,7 +10,6 @@ cp "${source}/playbook.sh" \
    "${source}/extra_packages.sh" \
    "${source}/extend_docker_storage.sh" \
    "${source}/cleanup.sh" \
-   "${source}/provision_ssh_keys.sh" \
    "${target}"
 
 find "$target" -type f -name '*.sh' -exec chmod 755 {} \;
