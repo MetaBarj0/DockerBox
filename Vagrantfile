@@ -93,6 +93,9 @@ Vagrant.configure( "2" ) do | config |
   provision_extra_packages            = fetch_env_with_default( 'EXTRA_PACKAGES', '' )
   provision_docker_volume_auto_extend = fetch_env_with_default( 'DOCKER_VOLUME_AUTO_EXTEND', 1 )
 
+  # interaction with the machine
+  ssh_command_extra_args = fetch_env_with_default( 'SSH_COMMAND_EXTRA_ARGS', '' )
+
   # multi-machine configuration from env
   multi_machines                       = fetch_env_with_default( 'MULTI_MACHINES', '' )
   multi_machines_create_public_network = fetch_env_with_default( 'MULTI_MACHINES_CREATE_PUBLIC_NETWORK', '' )
@@ -102,6 +105,11 @@ Vagrant.configure( "2" ) do | config |
   multi_machines_cpu                   = fetch_env_with_default( 'MULTI_MACHINES_CPU', '' )
   multi_machines_cpu_cap               = fetch_env_with_default( 'MULTI_MACHINES_CPU_CAP', '' )
   multi_machines_mem                   = fetch_env_with_default( 'MULTI_MACHINES_MEM', '' )
+
+  ssh_args = []
+  if not ssh_command_extra_args.empty?
+    ssh_args = ssh_command_extra_args.split( ',' )
+  end
 
   multi_machine_ips = [ '' ] # by default one machine, without any IP
   if not multi_machines.empty?
@@ -170,6 +178,10 @@ Vagrant.configure( "2" ) do | config |
     end
 
     config.ssh.username = "docker"
+
+    if ssh_args.length > 0
+      config.ssh.extra_args = ssh_args
+    end
 
     config.vm.define "#{ machine_name }" do | machine |
       machine.vm.box = "metabarj0/DockerBox"
@@ -276,3 +288,4 @@ Vagrant.configure( "2" ) do | config |
     end
   end
 end
+
