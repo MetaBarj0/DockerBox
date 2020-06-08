@@ -96,6 +96,13 @@ Vagrant.configure( "2" ) do | config |
   # interaction with the machine
   ssh_command_extra_args = fetch_env_with_default( 'SSH_COMMAND_EXTRA_ARGS', '' )
 
+  # key-value store provisioning
+  kv_db_file             = fetch_env_with_default( 'KV_DB_FILE', '' )
+  kv_db_file_create_link = fetch_env_with_default( 'KV_DB_FILE_CREATE_LINK ', '1' )
+  kv_item_separator      = fetch_env_with_default( 'KV_ITEM_SEPARATOR', ' ' )
+  kv_assignment_operator = fetch_env_with_default( 'KV_ASSIGNMENT_OPERATOR', '=' )
+  kv_db_items            = fetch_env_with_default( 'KV_DB_ITEMS', '' )
+
   # multi-machine configuration from env
   multi_machines                       = fetch_env_with_default( 'MULTI_MACHINES', '' )
   multi_machines_create_public_network = fetch_env_with_default( 'MULTI_MACHINES_CREATE_PUBLIC_NETWORK', '' )
@@ -185,7 +192,7 @@ Vagrant.configure( "2" ) do | config |
 
     config.vm.define "#{ machine_name }" do | machine |
       machine.vm.box = "metabarj0/DockerBox"
-      machine.vm.box_version = ">= 2.2.0"
+      machine.vm.box_version = ">= 2.2.1"
 
       if is_multi_machine_enabled
         hostname_prefix = multi_machines_hostname_prefix_array[ multi_machine_index ]
@@ -282,10 +289,14 @@ Vagrant.configure( "2" ) do | config |
                                       "KEYMAP"                    => provision_keymap,
                                       "KEYMAP_VARIANT"            => provision_keymap_variant,
                                       "EXTRA_PACKAGES"            => provision_extra_packages,
-                                      "DOCKER_VOLUME_AUTO_EXTEND" => provision_docker_volume_auto_extend
+                                      "DOCKER_VOLUME_AUTO_EXTEND" => provision_docker_volume_auto_extend,
+                                      "KV_DB_FILE"                => kv_db_file,
+                                      "KV_DB_FILE_CREATE_LINK"    => kv_db_file_create_link,
+                                      "KV_ITEM_SEPARATOR"         => kv_item_separator,
+                                      "KV_ASSIGNMENT_OPERATOR"    => kv_assignment_operator,
+                                      "KV_DB_ITEMS"               => kv_db_items
                                     }
 
     end
   end
 end
-
