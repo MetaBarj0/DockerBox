@@ -13,6 +13,6 @@ cp "${source}/playbook.sh" \
    "${source}/kv_store.sh" \
    "${target}"
 
-find "$target" -type f -name '*.sh' -exec chmod 755 {} \;
+find "$target" -type f -name '*.sh' -exec chmod 755 {} \; -exec dos2unix {} \;
 
 PATH="${PATH}":"$target" playbook.sh
