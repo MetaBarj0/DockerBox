@@ -192,7 +192,7 @@ Vagrant.configure( "2" ) do | config |
 
     config.vm.define "#{ machine_name }" do | machine |
       machine.vm.box = "metabarj0/DockerBox"
-      machine.vm.box_version = ">= 2.2.2"
+      machine.vm.box_version = ">= 2.2.3"
 
       if is_multi_machine_enabled
         hostname_prefix = multi_machines_hostname_prefix_array[ multi_machine_index ]
