@@ -1,11 +1,28 @@
-# This provider is the only one supported, do not change
-# default : virtualbox
-vagrant_default_provider: virtualbox
+# This object defines some property related to vagrant specificities
+vagrant:
+  # This provider is the only one supported, do not change
+  # string: the name of the provider supported by vagrant
+  # default : virtualbox
+  # warning: so far, only the virtualbox provider is supported
+  default_provider: virtualbox
 
-# Extra vagrant plugins to install for this machine
-# list : plugin names separated by spaces
-# default : null
-vagrant_extra_plugins:
+  # Extra vagrant plugins to install for this setup
+  # list : each element is a plugin name
+  # default : null
+  extra_plugins:
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 # hostname of the machine
 # string : a valid hostname for the machine

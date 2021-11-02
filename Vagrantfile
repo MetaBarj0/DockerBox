@@ -58,7 +58,7 @@ Vagrant.configure( "2" ) do | config |
   configuration = YAML.load_file( config_file_name )
 
   # install all extra plugins then, restart vagrant process
-  extra_plugins = configuration["vagrant_extra_plugins"]
+  extra_plugins = configuration[ 'vagrant' ][ 'extra_plugins' ]
 
   extra_plugins_to_install = ''
   if extra_plugins
@@ -74,7 +74,7 @@ Vagrant.configure( "2" ) do | config |
     end
   end
 
-  vagrant_provider = configuration[ 'vagrant_default_provider' ]
+  vagrant_provider = configuration[ 'vagrant' ][ 'default_provider' ]
 
   if vagrant_provider != "virtualbox"
     abort "Cannot up DockerBox with the #{ vagrant_provider } provider. Only 'virtualbox' provider is supported"
