@@ -76,6 +76,108 @@ single_machine:
   #       mounted in the /vagrant directory on the guest
   synced_folders:
 
+  # extra arguments to append to a ssh command executed by the 'vagrant ssh'
+  # command.
+  # list : each element is an argument
+  # default : null
+  # example :
+  # ssh_command_extra_args:
+  # - -t
+  # - exec
+  # - /home/docker/entrypoint.sh
+  # note: those arguments are also used in a multi machine setup
+  ssh_command_extra_args:
+
+# This object defines some aspect of the provisioning both for single machine
+# and multi machine setups
+provisioning:
+  # configure the time zone region
+  # string : region name
+  # default : UTC
+  zoneinfo_region: UTC
+
+  # configure the time zone city
+  # string : city name
+  # default : null
+  zoneinfo_city:
+
+  # configure the keymap
+  # string : the keymap name to use
+  # default : us
+  keymap: us
+
+  # configure the keymap variant
+  # string : the keymap variant name to use
+  # default : us
+  keymap_variant: us
+
+  # configure the automatic extension of the docker volume.
+  # boolean : true to enable docker volume auto extension, false to disable
+  #           docker volume extension
+  # default : true
+  # note : when this feature is enabled, docker volume can be extended as soon as
+  # you add and/or resize a virtual disk in your vm using hypervisor facilities.
+  # Moreover, you have to provision your machine for this feature to take effect.
+  docker_volume_auto_extend: true
+
+  # configure the extra packages to install on the guest VM
+  # list : a list of package groups or names
+  # default : null
+  # example:
+  # extra_packages:
+  # - screen
+  # - gcc
+  # - gdb
+  extra_packages:
+
+  # A key value store file that can be used as repository to store key-value
+  # pairs at provisioning stage. This file will be usable with gdbm utilities and
+  # can used after having provisioned the machine within a ssh session for
+  # instance.
+  # string : the absolute path of a file
+  # default : null
+  # example : /var/db/kvstore.db
+  kv_db_file:
+
+  # Indicates if a symbolic link to the key-value store file will be created
+  # within the /home/docker folder. It ensures you can always access the
+  # key-value store disregarding where the real file had been created.
+  # If there is already a filesystem item existing with the same name the link
+  # won't be created.
+  # If the above kv_db_file property is null, no link will be created.
+  # boolean : either true or false
+  # default : true
+  kv_db_file_create_link: true
+
+  # The character to use as a separator for each record to store in the key-value
+  # store. A record is a key-value pair.
+  # string : if more than one character are specified, only the first one will
+  # be used
+  # default : ' ' (a space)
+  # note: This property is used internally while provisioning the machine.
+  kv_record_separator: ' '
+
+  # The assignment operator character to use indicating that a specific value is
+  # associated to a key in a record.
+  # string : if more than one character are specified, only the first one will
+  # be used
+  # default : '='
+  kv_assignement_operator: '='
+
+  # Key-value pair records to store in the db file if set. Should any item be
+  # redefined more than once using the same key, the last defined item will take
+  # precedence, overwriting previously defined items.
+  # sequence : key-value pair records of the form
+  # <k>kv_assignement_operator<v>kv_record_separator<k>kv_assignement_operator<v>
+  # <k> being a key and <v> being a value
+  # default : null
+  # example : let '=' being kv_assignement_operator :
+  # kv_db_records:
+  # - 'foo=bar'
+  # - 'hello=world'
+  # - 'question=whatever'
+  # - 'answer=42'
+  kv_db_records:
 
 
 
@@ -88,104 +190,7 @@ single_machine:
 
 
 
-# configure the time zone region
-# string : region name
-# default : UTC
-zoneinfo_region: UTC
 
-# configure the time zone city
-# string : city name
-# default : null
-zoneinfo_city:
-
-# configure the keymap
-# string : the keymap name to use
-# default : us
-keymap: us
-
-# configure the keymap variant
-# string : the keymap variant name to use
-# default : us
-keymap_variant: us
-
-# configure the automatic extension of the docker volume.
-# boolean : true to enable docker volume auto extension, false to disable
-#           docker volume extension
-# default : true
-# note : when this feature is enabled, docker volume can be extended as soon as
-# you add and/or resize a virtual disk in your vm using hypervisor facilities.
-# Moreover, you have to provision your machine for this feature to take effect.
-docker_volume_auto_extend: true
-
-# configure the extra packages to install on the guest VM
-# list : a list of package groups or names
-# default : null
-# example:
-# extra_packages:
-# - screen
-# - gcc
-# - gdb
-extra_packages:
-
-# extra arguments to append to a ssh command executed by the 'vagrant ssh'
-# command.
-# list : each element is an argument
-# default : null
-# example :
-# ssh_command_extra_args:
-# - -t
-# - exec
-# - /home/docker/entrypoint.sh
-ssh_command_extra_args:
-
-# A key value store file that can be used as repository to store key-value
-# pairs at provisioning stage. This file will be usable with gdbm utilities and
-# can used after having provisioned the machine within a ssh session for
-# instance.
-# string : the absolute path of a file
-# default : null
-# example : /var/db/kvstore.db
-kv_db_file:
-
-# Indicates if a symbolic link to the key-value store file will be created
-# within the /home/docker folder. It ensures you can always access the
-# key-value store disregarding where the real file had been created.
-# If there is already a filesystem item existing with the same name the link
-# won't be created.
-# If the above kv_db_file property is null, no link will be created.
-# boolean : either true or false
-# default : true
-kv_db_file_create_link: true
-
-# The character to use as a separator for each record to store in the key-value
-# store. A record is a key-value pair.
-# string : if more than one character are specified, only the first one will
-# be used
-# default : ' ' (a space)
-# note: This property is used internally while provisioning the machine.
-kv_record_separator: ' '
-
-# The assignment operator character to use indicating that a specific value is
-# associated to a key in a record.
-# string : if more than one character are specified, only the first one will
-# be used
-# default : '='
-kv_assignement_operator: '='
-
-# Key-value pair records to store in the db file if set. Should any item be
-# redefined more than once using the same key, the last defined item will take
-# precedence, overwriting previously defined items.
-# sequence : key-value pair records of the form
-# <k>kv_assignement_operator<v>kv_record_separator<k>kv_assignement_operator<v>
-# <k> being a key and <v> being a value
-# default : null
-# example : let '=' being kv_assignement_operator :
-# kv_db_records:
-# - 'foo=bar'
-# - 'hello=world'
-# - 'question=whatever'
-# - 'answer=42'
-kv_db_records:
 
 # Indicates if the multi machine mode is enabled. Multi machine mode allow
 # several VM to be created and run from a single Vagrant project. Each machine

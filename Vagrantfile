@@ -82,7 +82,7 @@ Vagrant.configure( "2" ) do | config |
 
   ENV[ 'VAGRANT_DEFAULT_PROVIDER' ] = vagrant_provider
 
-  # machine configuration from config.yaml(.dist)
+  # single machine setup configuration from config.yaml(.dist)
   hostname                = configuration[ 'single_machine' ][ 'hostname' ]
   machine_cpu             = configuration[ 'single_machine' ][ 'cpu' ]
   machine_cpu_cap         = configuration[ 'single_machine' ][ 'cpu_cap' ]
@@ -90,24 +90,20 @@ Vagrant.configure( "2" ) do | config |
   create_public_network   = configuration[ 'single_machine' ][ 'create_public_network' ]
   machine_forwarded_ports = configuration[ 'single_machine' ][ 'forwarded_ports' ]
   machine_synced_folders  = configuration[ 'single_machine' ][ 'synced_folders' ]
+  ssh_command_extra_args  = configuration[ 'single_machine' ][ 'ssh_command_extra_args' ] || []
 
-  # machine provisionning from config.yaml(.dist)
-  provision_zoneinfo_region           = configuration[ 'zoneinfo_region' ]
-  provision_zoneinfo_city             = configuration[ 'zoneinfo_city' ]
-  provision_keymap                    = configuration[ 'keymap' ]
-  provision_keymap_variant            = configuration[ 'keymap_variant' ]
-  provision_docker_volume_auto_extend = configuration[ 'docker_volume_auto_extend' ] ? 1 : 0
-  provision_extra_packages            = ( defined? configuration[ 'extra_packages' ].join ) ? configuration[ 'extra_packages' ].join(' ') : ''
-
-  # interaction with the machine
-  ssh_command_extra_args = configuration[ 'ssh_command_extra_args' ] || []
-
-  # key-value store provisioning
-  kv_db_file             = configuration[ 'kv_db_file' ]
-  kv_db_file_create_link = configuration[ 'kv_db_file_create_link ' ] ? 1 : 0
-  kv_record_separator    = configuration[ 'kv_record_separator' ]
-  kv_assignment_operator = configuration[ 'kv_assignment_operator' ]
-  kv_db_records          = ( defined? configuration[ 'kv_db_records' ].join ) ? configuration[ 'kv_db_records' ].join( kv_record_separator ) : ''
+  # provisionning from config.yaml(.dist)
+  provision_zoneinfo_region           = configuration[ 'provisioning' ][ 'zoneinfo_region' ]
+  provision_zoneinfo_city             = configuration[ 'provisioning' ][ 'zoneinfo_city' ]
+  provision_keymap                    = configuration[ 'provisioning' ][ 'keymap' ]
+  provision_keymap_variant            = configuration[ 'provisioning' ][ 'keymap_variant' ]
+  provision_docker_volume_auto_extend = configuration[ 'provisioning' ][ 'docker_volume_auto_extend' ] ? 1 : 0
+  provision_extra_packages            = ( defined? configuration[ 'provisioning' ][ 'extra_packages' ].join ) ? configuration[ 'provisioning' ][ 'extra_packages' ].join(' ') : ''
+  kv_db_file                          = configuration[ 'provisioning' ][ 'kv_db_file' ]
+  kv_db_file_create_link              = configuration[ 'provisioning' ][ 'kv_db_file_create_link ' ] ? 1 : 0
+  kv_record_separator                 = configuration[ 'provisioning' ][ 'kv_record_separator' ]
+  kv_assignment_operator              = configuration[ 'provisioning' ][ 'kv_assignment_operator' ]
+  kv_db_records                       = ( defined? configuration[ 'provisioning' ][ 'kv_db_records' ].join ) ? configuration[ 'provisioning' ][ 'kv_db_records' ].join( kv_record_separator ) : ''
 
   # multi-machine configuration from config.yaml(.dist)
   multi_machine_ip_addresses           = configuration[ 'multi_machine_ip_addresses' ] || [ '' ]
