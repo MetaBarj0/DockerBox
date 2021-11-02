@@ -11,6 +11,70 @@ vagrant:
   # default : null
   extra_plugins:
 
+# This object describe properties for a single machine setup. Those properties
+# may be used in a multi machine setup as default values if specific multi
+# machine properties are not set explicitely. Read each property description to
+# know more.
+single_machine:
+  # hostname of the machine
+  # string : a valid hostname for the machine
+  # default : docker-box
+  hostname: docker-box
+
+  # Virtual cpu count
+  # integer : from 1 to the logical CPU count on the host
+  # default : 1
+  cpu: 1
+
+  # CPU execution cap.
+  # integer : from 1 to 100
+  # default : 100
+  cpu_cap: 100
+
+  # Reserved RAM for the VM in megabytes
+  # integer : from 512 to dependent of your host
+  # default : 1024
+  memory: 1024
+
+  # Create a public network, aka a bridged network allowing another machine on
+  # the bridged network to communicate with this machine
+  # boolean : true connect this machine to a bridged network, making it reachable
+  # false to not create a public_network
+  # default : false
+  # warning : in multi machine mode, this setting is not working properly due to
+  # a bug in Vagrant preventing machine to boot. As a workaround you can add the
+  # public network on the machine manually using hypervisor features.
+  create_public_network: false
+
+  # Forwarding rules allowing packet redirections from host to guest
+  # object : an isntance contains 3 properties, a host port, a guest port and
+  #          a protocol :
+  #          Host and guest ports are valid port numbers between 0 and 65535,
+  #          protocol being either tcp or udp
+  # default : null
+  # example :
+  # machine_forwarded_ports:
+  #   - host: 80
+  #     guest: 8080
+  #     protocol: tcp
+  #   - host: 3306
+  #     guest: 3307
+  #     protocol: tcp
+  forwarded_ports:
+
+  # synchronized folders to map between the host and the VM.
+  # object : An instance contains 2 properties: a source folder located on the
+  #          host and a target folder located on the guest
+  # default : null
+  # example :
+  # machine_synced_folders:
+  #   - host: ../test
+  #     guest: /src/test
+  #   - host: ../../meh
+  #     guest: /root/meh
+  # note: the current directory of this vagrant machine is always shared and
+  #       mounted in the /vagrant directory on the guest
+  synced_folders:
 
 
 
@@ -23,66 +87,6 @@ vagrant:
 
 
 
-
-# hostname of the machine
-# string : a valid hostname for the machine
-# default : docker-box
-machine_hostname: docker-box
-
-# Virtual cpu count
-# integer : from 1 to the logical CPU count on the host
-# default : 1
-machine_cpu: 1
-
-# CPU execution cap.
-# integer : from 1 to 100
-# default : 100
-machine_cpu_cap: 100
-
-# Reserved RAM for the VM in megabytes
-# integer : from 512 to dependent of your host
-# default : 1024
-machine_memory: 1024
-
-# Create a public network, aka a bridged network allowing another machine on
-# the bridged network to communicate with this machine
-# boolean : true connect this machine to a bridged network, making it reachable
-# false to not create a public_network
-# default : false
-# warning : in multi machine mode, this setting is not working properly due to
-# a bug in Vagrant preventing machine to boot. As a workaround you can add the
-# public network on the machine manually using hypervisor features.
-machine_create_public_network: false
-
-# Forwarding rules allowing packet redirections from host to guest
-# object : an isntance contains 3 properties, a host port, a guest port and
-#          a protocol :
-#          Host and guest ports are valid port numbers between 0 and 65535,
-#          protocol being either tcp or udp
-# default : null
-# example :
-# machine_forwarded_ports:
-#   - host: 80
-#     guest: 8080
-#     protocol: tcp
-#   - host: 3306
-#     guest: 3307
-#     protocol: tcp
-machine_forwarded_ports:
-
-# synchronized folders to map between the host and the VM.
-# object : An instance contains 2 properties: a source folder located on the
-#          host and a target folder located on the guest
-# default : null
-# example :
-# machine_synced_folders:
-#   - host: ../test
-#     guest: /src/test
-#   - host: ../../meh
-#     guest: /root/meh
-# note: the current directory of this vagrant machine is always shared and
-#       mounted in the /vagrant directory on the guest
-machine_synced_folders:
 
 # configure the time zone region
 # string : region name

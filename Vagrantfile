@@ -83,13 +83,13 @@ Vagrant.configure( "2" ) do | config |
   ENV[ 'VAGRANT_DEFAULT_PROVIDER' ] = vagrant_provider
 
   # machine configuration from config.yaml(.dist)
-  hostname                = configuration[ 'machine_hostname' ]
-  machine_cpu             = configuration[ 'machine_cpu' ]
-  machine_cpu_cap         = configuration[ 'machine_cpu_cap' ]
-  machine_memory          = configuration[ 'machine_memory' ]
-  create_public_network   = configuration[ 'machine_create_public_network' ]
-  machine_forwarded_ports = configuration[ 'machine_forwarded_ports' ]
-  machine_synced_folders  = configuration[ 'machine_synced_folders' ]
+  hostname                = configuration[ 'single_machine' ][ 'hostname' ]
+  machine_cpu             = configuration[ 'single_machine' ][ 'cpu' ]
+  machine_cpu_cap         = configuration[ 'single_machine' ][ 'cpu_cap' ]
+  machine_memory          = configuration[ 'single_machine' ][ 'memory' ]
+  create_public_network   = configuration[ 'single_machine' ][ 'create_public_network' ]
+  machine_forwarded_ports = configuration[ 'single_machine' ][ 'forwarded_ports' ]
+  machine_synced_folders  = configuration[ 'single_machine' ][ 'synced_folders' ]
 
   # machine provisionning from config.yaml(.dist)
   provision_zoneinfo_region           = configuration[ 'zoneinfo_region' ]
