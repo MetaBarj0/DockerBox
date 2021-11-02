@@ -11,31 +11,33 @@ EOF
   chown docker:docker "$dbFile"
 fi
 
-dbFileName="$(basename $dbFile)"
-if [ ! -e "/home/docker/${dbFileName}" ]; then
-  ln -s "$dbFile" /home/docker/
-  chown -h docker:docker "/home/docker/${dbFileName}"
+if [ "$KV_DB_FILE_CREATE_LINK" -eq 1 ]; then
+  dbFileName="$(basename $dbFile)"
+  if [ ! -e "/home/docker/${dbFileName}" ]; then
+    ln -s "$dbFile" /home/docker/
+    chown -h docker:docker "/home/docker/${dbFileName}"
+  fi
 fi
 
-items="$KV_DB_ITEMS"
-if [ -z "$items" ]; then exit 0; fi
+records="$KV_DB_RECORDS"
+if [ -z "$records" ]; then exit 0; fi
 
-separator=$(echo "$KV_ITEM_SEPARATOR" | awk -e '{ print substr( $0, 0, 1 ) }')
+separator=$(echo "$KV_RECORD_SEPARATOR" | awk -e '{ print substr( $0, 0, 1 ) }')
 assignmentOperator=$(echo "$KV_ASSIGNMENT_OPERATOR" | awk -e '{ print substr( $0, 0, 1 ) }')
 
-awkGetItem='{
+awkGetRecord='{
   for( i = 1; i <= NF; ++i )
     print $i
 }'
 
-item=; key=; value=
-while read item; do
-  key=$(echo "$item" | awk -F "$assignmentOperator" -e '{ print $1 }')
-  val=$(echo "$item" | awk -F "$assignmentOperator" -e '{ print $2 }')
+record=; key=; value=
+while read record; do
+  key=$(echo "$record" | awk -F "$assignmentOperator" -e '{ print $1 }')
+  val=$(echo "$record" | awk -F "$assignmentOperator" -e '{ print $2 }')
 
   gdbmtool "$dbFile" << EOF
     store "$key" "$val"
 EOF
 done << EOF
-$(echo "$items" | awk -F "$separator" -e "$awkGetItem")
+$(echo "$records" | awk -F "$separator" -e "$awkGetRecord")
 EOF

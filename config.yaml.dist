@@ -1,0 +1,316 @@
+# This provider is the only one supported, do not change
+# default : virtualbox
+vagrant_default_provider: virtualbox
+
+# Extra vagrant plugins to install for this machine
+# list : plugin names separated by spaces
+# default : null
+vagrant_extra_plugins:
+
+# hostname of the machine
+# string : a valid hostname for the machine
+# default : docker-box
+machine_hostname: docker-box
+
+# Virtual cpu count
+# integer : from 1 to the logical CPU count on the host
+# default : 1
+machine_cpu: 1
+
+# CPU execution cap.
+# integer : from 1 to 100
+# default : 100
+machine_cpu_cap: 100
+
+# Reserved RAM for the VM in megabytes
+# integer : from 512 to dependent of your host
+# default : 1024
+machine_memory: 1024
+
+# Create a public network, aka a bridged network allowing another machine on
+# the bridged network to communicate with this machine
+# boolean : true connect this machine to a bridged network, making it reachable
+# false to not create a public_network
+# default : false
+# warning : in multi machine mode, this setting is not working properly due to
+# a bug in Vagrant preventing machine to boot. As a workaround you can add the
+# public network on the machine manually using hypervisor features.
+machine_create_public_network: false
+
+# Forwarding rules allowing packet redirections from host to guest
+# object : an isntance contains 3 properties, a host port, a guest port and
+#          a protocol :
+#          Host and guest ports are valid port numbers between 0 and 65535,
+#          protocol being either tcp or udp
+# default : null
+# example :
+# machine_forwarded_ports:
+#   - host: 80
+#     guest: 8080
+#     protocol: tcp
+#   - host: 3306
+#     guest: 3307
+#     protocol: tcp
+machine_forwarded_ports:
+
+# synchronized folders to map between the host and the VM.
+# object : An instance contains 2 properties: a source folder located on the
+#          host and a target folder located on the guest
+# default : null
+# example :
+# machine_synced_folders:
+#   - host: ../test
+#     guest: /src/test
+#   - host: ../../meh
+#     guest: /root/meh
+# note: the current directory of this vagrant machine is always shared and
+#       mounted in the /vagrant directory on the guest
+machine_synced_folders:
+
+# configure the time zone region
+# string : region name
+# default : UTC
+zoneinfo_region: UTC
+
+# configure the time zone city
+# string : city name
+# default : null
+zoneinfo_city:
+
+# configure the keymap
+# string : the keymap name to use
+# default : us
+keymap: us
+
+# configure the keymap variant
+# string : the keymap variant name to use
+# default : us
+keymap_variant: us
+
+# configure the automatic extension of the docker volume.
+# boolean : true to enable docker volume auto extension, false to disable
+#           docker volume extension
+# default : true
+# note : when this feature is enabled, docker volume can be extended as soon as
+# you add and/or resize a virtual disk in your vm using hypervisor facilities.
+# Moreover, you have to provision your machine for this feature to take effect.
+docker_volume_auto_extend: true
+
+# configure the extra packages to install on the guest VM
+# list : a list of package groups or names
+# default : null
+# example:
+# extra_packages:
+# - screen
+# - gcc
+# - gdb
+extra_packages:
+
+# extra arguments to append to a ssh command executed by the 'vagrant ssh'
+# command.
+# list : each element is an argument
+# default : null
+# example :
+# ssh_command_extra_args:
+# - -t
+# - exec
+# - /home/docker/entrypoint.sh
+ssh_command_extra_args:
+
+# A key value store file that can be used as repository to store key-value
+# pairs at provisioning stage. This file will be usable with gdbm utilities and
+# can used after having provisioned the machine within a ssh session for
+# instance.
+# string : the absolute path of a file
+# default : null
+# example : /var/db/kvstore.db
+kv_db_file:
+
+# Indicates if a symbolic link to the key-value store file will be created
+# within the /home/docker folder. It ensures you can always access the
+# key-value store disregarding where the real file had been created.
+# If there is already a filesystem item existing with the same name the link
+# won't be created.
+# If the above kv_db_file property is null, no link will be created.
+# boolean : either true or false
+# default : true
+kv_db_file_create_link: true
+
+# The character to use as a separator for each record to store in the key-value
+# store. A record is a key-value pair.
+# string : if more than one character are specified, only the first one will
+# be used
+# default : ' ' (a space)
+# note: This property is used internally while provisioning the machine.
+kv_record_separator: ' '
+
+# The assignment operator character to use indicating that a specific value is
+# associated to a key in a record.
+# string : if more than one character are specified, only the first one will
+# be used
+# default : '='
+kv_assignement_operator: '='
+
+# Key-value pair records to store in the db file if set. Should any item be
+# redefined more than once using the same key, the last defined item will take
+# precedence, overwriting previously defined items.
+# sequence : key-value pair records of the form
+# <k>kv_assignement_operator<v>kv_record_separator<k>kv_assignement_operator<v>
+# <k> being a key and <v> being a value
+# default : null
+# example : let '=' being kv_assignement_operator :
+# kv_db_records:
+# - 'foo=bar'
+# - 'hello=world'
+# - 'question=whatever'
+# - 'answer=42'
+kv_db_records:
+
+# Indicates if the multi machine mode is enabled. Multi machine mode allow
+# several VM to be created and run from a single Vagrant project. Each machine
+# will be provided the same amount of resource (cpu, cpu cap and memory) as
+# specified in machine_cpu, machine_cpu_cap and machine_memory variables by
+# default. By default this mode is disabled as the value of this variable is
+# null. To enable the multi machine mode, at least 2 IP addresses must be
+# specified.
+# list : a set of IP addresses
+# default : null
+# example:
+# multi_machine_ip_addresses:
+# - 10.0.2.1
+# - 10.0.2.2
+# - 10.0.2.3
+# note : a null value means the multi machine mode is disabled. Specifying
+# only 1 IP address means a normal machine setup leaving the multi machine mode
+# disabled.
+# warning : at least 2 IP addresses must be specified for a valid multi machine
+# setup
+multi_machine_ip_addresses:
+
+# Indicates if a machine of a multi machine mode have its own public network,
+# aka bridged network, allowing other machines on the same network to
+# communicate with them
+# list : true to create a public network for the machine at a specified
+# index, false otherwise
+# default : null
+# note : values in this variable supersedes value specified in the
+#        machine_create_public_network variable.
+# example : given a 3 multi machine configuration :
+# multi_machines_create_public_network:
+# - false
+# - true
+# - false
+# will enable a public network only for the second machine, not the first nor
+# the last.
+# warning : currently unsupported. It looks like a bug in vagrant prevent this
+# setting to work at all and prevent the multi machine setup to work.
+# However, it's been a while since this setting has been created, it could be
+# wise to ensure this feature is still unsupported.
+multi_machines_create_public_network:
+
+# Indicates if a machine of a multi machine setup share same synced folders
+# specified in the machine_synced_folders property.
+# list : true to share synced folder for the multi machine at the specified
+# index specified in machine_synced_folders variable. false to not share any
+# synced folder
+# default : null
+# example : given a 3 multi machine configuration :
+# multi_machines_share_synced_folders:
+# - false
+# - true
+# - false
+# will enable a share of synced folder only for the second machine.
+multi_machines_share_synced_folders:
+
+# Prefixes to be used when defining a vm in a multi machine setup. By default,
+# vagrant assigns the 'default' name for a machine. DockerBox behaves slightly
+# differently by default. If nothing is specified for a specific machine
+# index, the value 'machine-N' will be used, with 'N' being the index of the
+# machine. If you want another prefix, specify a name for each machine
+# separated by a space without the number suffix that'll be automatically
+# calculated.
+# list : containing a name for each machine, that will be suffixed by an
+# automatically incremented index
+# default : null
+# example : for a 3 multi machine setup, having:
+# multi_machines_vm_prefix:
+# - manager
+# - worker
+# - worker
+# will create vm named with 'manager-0', 'worker-0' and 'worker-1' in their
+# respective identifier
+multi_machines_vm_prefixes:
+
+# Prefixes to be used for each hostname in a multi machine setup. This property
+# supersedes machine_hostname variable when defined. Each hostname is suffixed
+# by '.N' where 'N' is the index of the machine in the multi machine setup. If
+# a hostname is not specified for a given index for an existing machine, the
+# machine_hostname variable is used as prefix and an automatically computed
+# numerical suffix is appended to it.
+# list : containing a hostname for each machine, that will be suffixed by an
+# automatically incremented index
+# default : null
+# example : for a 3 multi machine setup, having:
+# multi_machines_hostname_prefixes:
+# - manager
+# - worker
+# - worker
+# will create hostnamed machines with 'manager.0', 'worker.0' and 'worker.1'
+multi_machines_hostname_prefixes:
+
+# Allow heterogeneous resource allocation in a multi machine setup for virtual
+# CPU count. By default, that is, when this variable is not set, each machine
+# in a multi machine setup beneficiates of the same virtual cpu as specified in
+# the machine_cpu variable. When set, this variable supersedes the
+# machine_cpu variable value and assigns a count of virtual cpu for the
+# machine at specified index. If nothing is specified for a particular machine
+# index, the machine_cpu property value is used.
+# list : each element specifies a virtual cpu count for the machine at
+# specified index.
+# default : null
+# example : given a 3 multi machine setup:
+# multi_machines_cpu:
+# - 6
+# - 4
+# - 2
+# will give 6 vcpu for the first machine, 4 for the second then 2 for the
+# third.
+multi_machines_cpu:
+
+# Allow heterogeneous resource allocation in a multi machine setup for virtual
+# CPU cap. By default, that is, when this variable is not set, each machine in
+# a multi machine setup beneficiates of the same virtual cpu as specified in
+# the machine_cpu_cap variable. When setup, this variable supersedes the
+# machine_cpu_cap variable value and assigns a percentage of virtual cpu
+# power for the machine at specified index. If nothing is specified for a
+# particular machine index, the machine_cpu_cap property value is used.
+# list : each element specifies a virtual cpu cap for the machine at
+# specified index.
+# default : null
+# example : given a 3 multi machine setup:
+# multi_machines_cpu_cap:
+# - 60
+# - 40
+# - 20
+# will give 60 vcpu power for the first machine, 40% for the second then 20%
+# for the third.
+multi_machines_cpu_cap:
+
+# Allow heterogeneous resource allocation in a multi machine setup for memory.
+# By default, that is, when this variable is not set, each machine in a multi
+# machine setup beneficiates of the same amount of memory as specified in the
+# machine_memory variable. When setup, this variable supersedes the
+# machine_memory variable value and attributes an amount of memory for the
+# machine at specified index. If nothing is specified for a particular machine
+# index, the machine_memory property value is used.
+# list : each element specifies an amount of memory for the machine at
+# specified index.
+# default : null
+# example : given a 3 multi machine setup:
+# multi_machines_memory:
+# - 1024
+# - 2048
+# - 4096
+# will assign 1GB for the first machine, 2GB for the second then 4GB for the
+# third.
+multi_machines_memory:
