@@ -33,7 +33,7 @@ Vagrant.configure( "2" ) do | config |
   end
 
   # install all required plugins then, restart vagrant process
-  required_plugins = %w( vagrant-vbguest vagrant-env )
+  required_plugins = %w( vagrant-vbguest )
   plugins_to_install = required_plugins.select { | plugin | not Vagrant.has_plugin? plugin }
 
   if not plugins_to_install.empty?
@@ -45,9 +45,6 @@ Vagrant.configure( "2" ) do | config |
     end
   end
 
-  # enable vagrant-env plugin, reading .env file
-  config.env.enable
-
   config_file_name = 'config.yaml'
 
   if not FileTest::file?( './config.yaml' )
@@ -56,11 +53,6 @@ Vagrant.configure( "2" ) do | config |
     puts "template."
 
     config_file_name = "#{ config_file_name }.dist"
-  end
-
-  # utility to fetch environmental with a default value
-  def fetch_env_with_default( key, default )
-    return ( ENV.has_key?( key ) && ENV[ key ] != "" ) ? ENV[ key ] : default
   end
 
   configuration = YAML.load_file( config_file_name )
