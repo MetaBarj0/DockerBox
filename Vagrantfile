@@ -106,14 +106,14 @@ Vagrant.configure( "2" ) do | config |
   kv_db_records                       = ( defined? configuration[ 'provisioning' ][ 'kv_db_records' ].join ) ? configuration[ 'provisioning' ][ 'kv_db_records' ].join( kv_record_separator ) : ''
 
   # multi-machine configuration from config.yaml(.dist)
-  multi_machine_ip_addresses           = configuration[ 'multi_machine_ip_addresses' ] || [ '' ]
-  multi_machines_create_public_network = configuration[ 'multi_machines_create_public_network' ] || []
-  multi_machines_share_synced_folders  = configuration[ 'multi_machines_share_synced_folders' ] || []
-  multi_machines_vm_prefixes           = configuration[ 'multi_machines_vm_prefixes' ] || []
-  multi_machines_hostname_prefixes     = configuration[ 'multi_machines_hostname_prefixes' ] || []
-  multi_machines_cpu                   = configuration[ 'multi_machines_cpu' ]
-  multi_machines_cpu_cap               = configuration[ 'multi_machines_cpu_cap' ]
-  multi_machines_memory                = configuration[ 'multi_machines_memory' ]
+  multi_machine_ip_addresses           = configuration[ 'multi_machine' ][ 'ip_addresses' ] || [ '' ]
+  multi_machine_create_public_network  = configuration[ 'multi_machine' ][ 'create_public_network' ] || []
+  multi_machine_shared_synced_folders  = configuration[ 'multi_machine' ][ 'shared_synced_folders' ] || []
+  multi_machine_vm_prefixes            = configuration[ 'multi_machine' ][ 'vm_prefixes' ] || []
+  multi_machine_hostname_prefixes      = configuration[ 'multi_machine' ][ 'hostname_prefixes' ] || []
+  multi_machine_cpus                   = configuration[ 'multi_machine' ][ 'cpus' ]
+  multi_machine_cpu_caps               = configuration[ 'multi_machine' ][ 'cpu_caps' ]
+  multi_machine_memories               = configuration[ 'multi_machine' ][ 'memories' ]
 
   is_multi_machine_enabled = multi_machine_ip_addresses.length() > 1
 
@@ -125,7 +125,7 @@ Vagrant.configure( "2" ) do | config |
   multi_machine_ip_addresses.each_with_index do | ip, multi_machine_index |
     machine_name = 'default'
     if is_multi_machine_enabled
-      vm_prefix = multi_machines_vm_prefixes[ multi_machine_index ]
+      vm_prefix = multi_machine_vm_prefixes[ multi_machine_index ]
 
       if ( vm_prefix == nil ) || ( vm_prefix.empty? )
         vm_prefix = "machine"
@@ -151,7 +151,7 @@ Vagrant.configure( "2" ) do | config |
       machine.vm.box_version = ">= 3.0.0"
 
       if is_multi_machine_enabled
-        hostname_prefix = multi_machines_hostname_prefixes[ multi_machine_index ]
+        hostname_prefix = multi_machine_hostname_prefixes[ multi_machine_index ]
 
         if ( hostname_prefix == nil ) || hostname_prefix.empty?
           hostname_prefix = hostname
@@ -170,7 +170,7 @@ Vagrant.configure( "2" ) do | config |
 
       # vagrant bug : not supported but should work as soon as vagrant has fixed its stuff
       is_unique_machine_public_network_enabled = create_public_network && ( not is_multi_machine_enabled )
-      is_multi_machine_public_network_enabled = multi_machines_create_public_network[ multi_machine_index ]
+      is_multi_machine_public_network_enabled = multi_machine_create_public_network[ multi_machine_index ]
 
       if is_unique_machine_public_network_enabled || is_multi_machine_public_network_enabled
         machine.vm.network "public_network"
@@ -186,7 +186,7 @@ Vagrant.configure( "2" ) do | config |
       end
 
       if machine_synced_folders
-        has_multi_machine_synced_folders = multi_machines_share_synced_folders[ multi_machine_index ]
+        has_multi_machine_synced_folders = multi_machine_shared_synced_folders[ multi_machine_index ]
 
         if ( not is_multi_machine_enabled ) || has_multi_machine_synced_folders
           machine_synced_folders.each { | machine_synced_folder |
@@ -202,24 +202,24 @@ Vagrant.configure( "2" ) do | config |
       current_machine_cpu = machine_cpu
 
       if is_multi_machine_enabled
-        if ( not multi_machines_cpu[ multi_machine_index ] == nil ) && ( multi_machines_cpu[ multi_machine_index ] > 0 )
-          current_machine_cpu = multi_machines_cpu[ multi_machine_index ]
+        if ( not multi_machine_cpus[ multi_machine_index ] == nil ) && ( multi_machine_cpus[ multi_machine_index ] > 0 )
+          current_machine_cpu = multi_machine_cpus[ multi_machine_index ]
         end
       end
 
       current_machine_cpu_cap = machine_cpu_cap
 
       if is_multi_machine_enabled
-        if ( not multi_machines_cpu_cap[ multi_machine_index ] == nil ) && ( multi_machines_cpu_cap[ multi_machine_index ] > 0 )
-          current_machine_cpu_cap = multi_machines_cpu_cap[ multi_machine_index ]
+        if ( not multi_machine_cpu_caps[ multi_machine_index ] == nil ) && ( multi_machine_cpu_caps[ multi_machine_index ] > 0 )
+          current_machine_cpu_cap = multi_machine_cpu_caps[ multi_machine_index ]
         end
       end
 
       current_machine_memory = machine_memory
 
       if is_multi_machine_enabled
-        if ( not multi_machines_memory[ multi_machine_index ] == nil ) && ( multi_machines_memory[ multi_machine_index ] > 0 )
-          current_machine_memory = multi_machines_memory[ multi_machine_index ]
+        if ( not multi_machine_memories[ multi_machine_index ] == nil ) && ( multi_machine_memories[ multi_machine_index ] > 0 )
+          current_machine_memory = multi_machine_memories[ multi_machine_index ]
         end
       end
 
