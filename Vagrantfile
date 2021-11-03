@@ -7,9 +7,9 @@ CONFIG_FILE_NAME = 'config.yaml'
 
 require './modules/dockerbox'
 
-Vagrant.configure( VAGRANTFILE_API_VERSION ) do | config |
-  project = DockerBox::VagrantProject.new( CONFIG_FILE_NAME )
+project = DockerBox::VagrantProject.new( CONFIG_FILE_NAME )
 
+Vagrant.configure( VAGRANTFILE_API_VERSION ) do | config |
   project.from_machines_ip_addresses.each_with_index do | ip, machine_index |
     config.ssh.username = "docker"
     config.ssh.extra_args = project.get_machine_ssh_command_extra_args()
@@ -23,13 +23,13 @@ Vagrant.configure( VAGRANTFILE_API_VERSION ) do | config |
         machine.vm.network "public_network"
       end
 
-      project.from_machine_forwarded_ports( machine_index ).each { | rule |
+      project.from_machine_forwarded_ports( machine_index ).each do | rule |
         machine.vm.network "forwarded_port", guest: rule[ 'guest' ], host: rule[ 'host' ], protocol: rule[ 'protocol' ]
-      }
+      end 
 
-      project.from_machine_synced_folders( machine_index ).each { | synced_folder |
+      project.from_machine_synced_folders( machine_index ).each do | synced_folder |
         machine.vm.synced_folder synced_folder[ 'host' ], synced_folder[ 'guest' ]
-      }
+      end 
 
       if project.is_multi_machine_enabled()
         machine.vm.network "private_network", ip: "#{ ip }"
