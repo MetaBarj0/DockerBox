@@ -43,20 +43,11 @@ Vagrant.configure( "2" ) do | config |
         machine.vm.network "private_network", ip: "#{ ip }"
       end
 
-      current_machine_memory = single_machine.memory
-
-      if DockerBox::is_multi_machine_enabled( 'config.yaml' )
-        if ( not multi_machine_memories[ multi_machine_index ] == nil ) && ( multi_machine_memories[ multi_machine_index ] > 0 )
-          current_machine_memory = multi_machine_memories[ multi_machine_index ]
-        end
-      end
-
       # virtualbox provider specific configuration with defaults
       machine.vm.provider "virtualbox" do | v |
         v.customize [ "modifyvm", :id, "--cpus", DockerBox::get_machine_cpu_count( 'config.yaml', multi_machine_index ) ]
         v.customize [ "modifyvm", :id, "--cpuexecutioncap", DockerBox::get_machine_cpu_cap( 'config.yaml', multi_machine_index ) ]
-
-        v.customize [ "modifyvm", :id, "--memory", current_machine_memory ]
+        v.customize [ "modifyvm", :id, "--memory", DockerBox::get_machine_memory( 'config.yaml', multi_machine_index ) ]
       end
 
       # shell provisioning

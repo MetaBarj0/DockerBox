@@ -276,4 +276,18 @@ module DockerBox
       return multi_machine.cpu_caps[ multi_machine_index ]
     end
   end
+
+  def self.get_machine_memory( config_file_name, multi_machine_index )
+    configuration = DockerBox::read_configuration( config_file_name )
+    single_machine = DockerBox::get_single_machine_properties( configuration )
+    multi_machine = DockerBox::get_multi_machine_properties( configuration )
+
+    if not DockerBox::is_multi_machine_enabled( 'config.yaml' )
+      return single_machine.memory
+    end
+
+    if multi_machine.memories[ multi_machine_index ] && ( multi_machine.memories[ multi_machine_index ] > 0 )
+      return multi_machine.memories[ multi_machine_index ]
+    end
+  end
 end
