@@ -88,7 +88,7 @@ module DockerBox
       def create_public_network()  @configuration[ 'single_machine' ][ 'create_public_network' ] end;
       def forwarded_ports()        @configuration[ 'single_machine' ][ 'forwarded_ports' ] end;
       def synced_folders()         @configuration[ 'single_machine' ][ 'synced_folders' ] end;
-      def ssh_command_extra_args() @configuration[ 'single_machine' ][ 'ssh_command_extra_args' ] || [] end;
+      def ssh_command_extra_args() @configuration[ 'single_machine' ][ 'ssh_command_extra_args' ] end;
     end.new( configuration )
   end
 
@@ -135,9 +135,9 @@ module DockerBox
 
   class MultiMachineVmPrefixBuilder
     def initialize( config_file_name )
+      configuration = DockerBox::read_configuration( config_file_name )
+      @multi_machine = DockerBox::get_multi_machine_properties( configuration )
       @multi_machines_vm_prefix_map = {}
-      @configuration = DockerBox::read_configuration( config_file_name )
-      @multi_machine = DockerBox::get_multi_machine_properties( @configuration )
     end
 
     def get_next_vm_prefix( multi_machine_index )
@@ -160,6 +160,35 @@ module DockerBox
       end
 
       return "#{ vm_prefix }-#{ @multi_machines_vm_prefix_map[ vm_prefix ] }"
+    end
+  end
+
+  class MultiMachineHostnameBuilder
+    def initialize( config_file_name )
+      configuration = DockerBox::read_configuration( config_file_name )
+      @single_machine = DockerBox::get_single_machine_properties( configuration )
+      @multi_machine = DockerBox::get_multi_machine_properties( configuration )
+      @multi_machines_hostname_prefix_map = {}
+    end
+
+    def get_next_hostname( multi_machine_index )
+      hostname = @single_machine.hostname
+
+      if DockerBox::is_multi_machine_enabled( @multi_machine )
+        hostname_prefix = @multi_machine.hostname_prefixes[ multi_machine_index ]
+
+        if ( hostname_prefix == nil ) || hostname_prefix.empty?
+          hostname_prefix = @single_machine.hostname
+        end
+
+        if @multi_machines_hostname_prefix_map.include?( hostname_prefix )
+          @multi_machines_hostname_prefix_map[ hostname_prefix ] = @multi_machines_hostname_prefix_map[ hostname_prefix ] + 1
+        else
+          @multi_machines_hostname_prefix_map[ hostname_prefix ] = 0
+        end
+
+        hostname = "#{ hostname_prefix }-#{ @multi_machines_hostname_prefix_map[ hostname_prefix ] }"
+      end
     end
   end
 end

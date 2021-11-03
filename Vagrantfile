@@ -8,46 +8,24 @@ DockerBox::install_specified_plugins( %w( vagrant-vbguest ) )
 configuration = DockerBox::read_configuration( 'config.yaml' )
 DockerBox::install_extra_plugins_from_configuration( configuration )
 DockerBox::setup_vagrant_provider_from_configuration( configuration )
-single_machine = DockerBox::get_single_machine_properties( configuration )
-provision = DockerBox::get_provision_properties( configuration )
-multi_machine = DockerBox::get_multi_machine_properties( configuration )
 
 Vagrant.configure( "2" ) do | config |
-  multi_machines_vm_prefix_builder = DockerBox::MultiMachineVmPrefixBuilder.new( 'config.yaml' )
+  single_machine = DockerBox::get_single_machine_properties( configuration )
+  multi_machine = DockerBox::get_multi_machine_properties( configuration )
+  provision = DockerBox::get_provision_properties( configuration )
 
-  multi_machines_hostname_prefix_map = {}
+  multi_machines_vm_prefix_builder = DockerBox::MultiMachineVmPrefixBuilder.new( 'config.yaml' )
+  multi_machines_hostname_builder = DockerBox::MultiMachineHostnameBuilder.new( 'config.yaml' )
 
   # creating machines
   multi_machine.ip_addresses.each_with_index do | ip, multi_machine_index |
     config.ssh.username = "docker"
+    config.ssh.extra_args = single_machine.ssh_command_extra_args
 
-    if single_machine.ssh_command_extra_args.length > 0
-      config.ssh.extra_args = single_machine.ssh_command_extra_args
-    end
-
-    machine_name = multi_machines_vm_prefix_builder.get_next_vm_prefix( multi_machine_index )
-
-    config.vm.define "#{ machine_name }" do | machine |
+    config.vm.define "#{ multi_machines_vm_prefix_builder.get_next_vm_prefix( multi_machine_index ) }" do | machine |
       machine.vm.box = "metabarj0/DockerBox"
       machine.vm.box_version = ">= 3.0.0"
-
-      if DockerBox::is_multi_machine_enabled( multi_machine )
-        hostname_prefix = multi_machine_hostname_prefixes[ multi_machine_index ]
-
-        if ( hostname_prefix == nil ) || hostname_prefix.empty?
-          hostname_prefix = hostname
-        end
-
-        if multi_machines_hostname_prefix_map.include?( hostname_prefix )
-          multi_machines_hostname_prefix_map[ hostname_prefix ] = multi_machines_hostname_prefix_map[ hostname_prefix ] + 1
-        else
-          multi_machines_hostname_prefix_map[ hostname_prefix ] = 0
-        end
-
-        machine.vm.hostname = "#{ hostname_prefix }-#{ multi_machines_hostname_prefix_map[ hostname_prefix ] }"
-      else
-        machine.vm.hostname = single_machine.hostname
-      end
+      machine.vm.hostname = multi_machines_hostname_builder.get_next_hostname( multi_machine_index )
 
       # vagrant bug : not supported but should work as soon as vagrant has fixed its stuff
       is_unique_machine_public_network_enabled = single_machine.create_public_network && ( not is_multi_machine_enabled )
