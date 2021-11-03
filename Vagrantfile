@@ -8,17 +8,9 @@ DockerBox::install_specified_plugins( %w( vagrant-vbguest ) )
 configuration = DockerBox::read_configuration( 'config.yaml' )
 DockerBox::install_extra_plugins_from_configuration( configuration )
 DockerBox::setup_vagrant_provider_from_configuration( configuration )
+single_machine = DockerBox::get_single_machine_properties( configuration )
 
 Vagrant.configure( "2" ) do | config |
-  # single machine setup configuration from config.yaml(.dist)
-  hostname                = configuration[ 'single_machine' ][ 'hostname' ]
-  machine_cpu             = configuration[ 'single_machine' ][ 'cpu' ]
-  machine_cpu_cap         = configuration[ 'single_machine' ][ 'cpu_cap' ]
-  machine_memory          = configuration[ 'single_machine' ][ 'memory' ]
-  create_public_network   = configuration[ 'single_machine' ][ 'create_public_network' ]
-  machine_forwarded_ports = configuration[ 'single_machine' ][ 'forwarded_ports' ]
-  machine_synced_folders  = configuration[ 'single_machine' ][ 'synced_folders' ]
-  ssh_command_extra_args  = configuration[ 'single_machine' ][ 'ssh_command_extra_args' ] || []
 
   # provisionning from config.yaml(.dist)
   provision_zoneinfo_region           = configuration[ 'provisioning' ][ 'zoneinfo_region' ]
@@ -70,8 +62,8 @@ Vagrant.configure( "2" ) do | config |
 
     config.ssh.username = "docker"
 
-    if ssh_command_extra_args.length > 0
-      config.ssh.extra_args = ssh_command_extra_args
+    if single_machine.ssh_command_extra_args.length > 0
+      config.ssh.extra_args = single_machine.ssh_command_extra_args
     end
 
     config.vm.define "#{ machine_name }" do | machine |
@@ -93,11 +85,11 @@ Vagrant.configure( "2" ) do | config |
 
         machine.vm.hostname = "#{ hostname_prefix }-#{ multi_machines_hostname_prefix_map[ hostname_prefix ] }"
       else
-        machine.vm.hostname = hostname
+        machine.vm.hostname = single_machine.hostname
       end
 
       # vagrant bug : not supported but should work as soon as vagrant has fixed its stuff
-      is_unique_machine_public_network_enabled = create_public_network && ( not is_multi_machine_enabled )
+      is_unique_machine_public_network_enabled = single_machine.create_public_network && ( not is_multi_machine_enabled )
       is_multi_machine_public_network_enabled = multi_machine_create_public_network[ multi_machine_index ]
 
       if is_unique_machine_public_network_enabled || is_multi_machine_public_network_enabled
@@ -106,18 +98,18 @@ Vagrant.configure( "2" ) do | config |
 
       # forwarding only applies on the first machine
       if( multi_machine_index == 0 )
-        if machine_forwarded_ports
-          machine_forwarded_ports.each { | rule |
+        if single_machine.forwarded_ports
+          single_machine.forwarded_ports.each { | rule |
             machine.vm.network "forwarded_port", guest: rule[ 'guest' ], host: rule[ 'host' ], protocol: rule[ 'protocol' ]
           }
         end
       end
 
-      if machine_synced_folders
+      if single_machine.synced_folders
         has_multi_machine_synced_folders = multi_machine_shared_synced_folders[ multi_machine_index ]
 
         if ( not is_multi_machine_enabled ) || has_multi_machine_synced_folders
-          machine_synced_folders.each { | machine_synced_folder |
+          synced_folders.each { | machine_synced_folder |
             machine.vm.synced_folder machine_synced_folder[ 'host' ], machine_synced_folder[ 'guest' ]
           }
         end
@@ -127,7 +119,7 @@ Vagrant.configure( "2" ) do | config |
         machine.vm.network "private_network", ip: "#{ ip }"
       end
 
-      current_machine_cpu = machine_cpu
+      current_machine_cpu = single_machine.cpu
 
       if is_multi_machine_enabled
         if ( not multi_machine_cpus[ multi_machine_index ] == nil ) && ( multi_machine_cpus[ multi_machine_index ] > 0 )
@@ -135,7 +127,7 @@ Vagrant.configure( "2" ) do | config |
         end
       end
 
-      current_machine_cpu_cap = machine_cpu_cap
+      current_machine_cpu_cap = single_machine.cpu_cap
 
       if is_multi_machine_enabled
         if ( not multi_machine_cpu_caps[ multi_machine_index ] == nil ) && ( multi_machine_cpu_caps[ multi_machine_index ] > 0 )
@@ -143,7 +135,7 @@ Vagrant.configure( "2" ) do | config |
         end
       end
 
-      current_machine_memory = machine_memory
+      current_machine_memory = single_machine.memory
 
       if is_multi_machine_enabled
         if ( not multi_machine_memories[ multi_machine_index ] == nil ) && ( multi_machine_memories[ multi_machine_index ] > 0 )

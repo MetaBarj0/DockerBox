@@ -1,7 +1,6 @@
 require 'yaml'
 
 module DockerBox
-
   def self.repair_plugin_dependencies()
     if system "vagrant plugin list"
       return true
@@ -74,5 +73,22 @@ module DockerBox
     end
 
     ENV[ 'VAGRANT_DEFAULT_PROVIDER' ] = vagrant_provider
+  end
+
+  def self.get_single_machine_properties( configuration )
+    return Class.new do
+      def initialize( configuration )
+        @configuration = configuration
+      end
+
+      def hostname()               @configuration[ 'single_machine' ][ 'hostname' ] end;
+      def cpu()                    @configuration[ 'single_machine' ][ 'cpu' ] end;
+      def cpu_cap()                @configuration[ 'single_machine' ][ 'cpu_cap' ] end;
+      def memory()                 @configuration[ 'single_machine' ][ 'memory' ] end;
+      def create_public_network()  @configuration[ 'single_machine' ][ 'create_public_network' ] end;
+      def forwarded_ports()        @configuration[ 'single_machine' ][ 'forwarded_ports' ] end;
+      def synced_folders()         @configuration[ 'single_machine' ][ 'synced_folders' ] end;
+      def ssh_command_extra_args() @configuration[ 'single_machine' ][ 'ssh_command_extra_args' ] || [] end;
+    end.new( configuration )
   end
 end
