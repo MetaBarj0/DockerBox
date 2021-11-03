@@ -3,10 +3,16 @@ VAGRANTFILE_API_VERSION = "2"
 
 require './modules/dockerbox'
 
-DockerBox::ensure_windows_hyperv_is_disable_when_up_or_reload()
-DockerBox::install_specified_plugins( %w( vagrant-vbguest ) )
-DockerBox::install_extra_plugins_from_configuration( 'config.yaml' )
-DockerBox::setup_vagrant_provider_from_configuration( 'config.yaml' )
+project = DockerBox::VagrantProject.new( 'config.yaml' )
+
+
+
+
+
+
+
+
+
 
 Vagrant.configure( "2" ) do | config |
   multi_machines_vm_prefix_builder = DockerBox::MultiMachineVmPrefixBuilder.new( 'config.yaml' )
