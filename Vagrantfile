@@ -3,6 +3,25 @@ VAGRANTFILE_API_VERSION = "2"
 
 require 'yaml'
 
+def repair_plugin_dependencies()
+  if system "vagrant plugin list"
+    return true
+  end
+
+  if not system "vagrant plugin repair"
+    return system "vagrant plugin expunge --reinstall "
+  end
+
+  return true
+end
+
+def install_plugin_dependencies( plugins )
+  repair_plugin_dependencies()
+
+  system "vagrant plugin install #{ plugins.join( ' ' ) }"
+  system "vagrant plugin update"
+end
+
 Vagrant.configure( "2" ) do | config |
   # ensuring windows hyper-v optional features are disabled when bringing up the machine
   if( ARGV[ 0 ] == "up" || ARGV[ 0 ] == "reload" )
@@ -11,25 +30,6 @@ Vagrant.configure( "2" ) do | config |
         abort "Windows hyper-v deactivation has failed. Aborting."
       end
     end
-  end
-
-  def repair_plugin_dependencies()
-    if system "vagrant plugin list"
-      return true
-    end
-
-    if not system "vagrant plugin repair"
-      return system "vagrant plugin expunge --reinstall "
-    end
-
-    return true
-  end
-
-  def install_plugin_dependencies( plugins )
-    repair_plugin_dependencies()
-
-    system "vagrant plugin install #{ plugins.join( ' ' ) }"
-    system "vagrant plugin update"
   end
 
   # install all required plugins then, restart vagrant process
