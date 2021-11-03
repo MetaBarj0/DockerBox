@@ -221,4 +221,26 @@ module DockerBox
 
     return DockerBox::can_setup_forwarded_ports( config_file_name, multi_machine_index ) ? single_machine.forwarded_ports : []
   end
+
+  def self.multi_machine_have_shared_synced_folders( multi_machine_index )
+    configuration = DockerBox::read_configuration( config_file_name )
+    multi_machine = DockerBox::get_multi_machine_properties( configuration )
+
+    return multi_machine.shared_synced_folders[ multi_machine_index ]
+  end
+
+  def self.get_synced_folders( config_file_name, multi_machine_index )
+    configuration = DockerBox::read_configuration( config_file_name )
+    single_machine = DockerBox::get_single_machine_properties( configuration )
+
+    if not single_machine.synced_folders
+      return []
+    end
+
+    if ( not DockerBox::is_multi_machine_enabled ) || DockerBox::multi_machine_have_shared_synced_folders( multi_machine_index )
+      return single_machine.synced_folders
+    end
+
+    return []
+  end
 end

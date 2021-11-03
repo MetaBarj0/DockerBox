@@ -35,15 +35,9 @@ Vagrant.configure( "2" ) do | config |
         machine.vm.network "forwarded_port", guest: rule[ 'guest' ], host: rule[ 'host' ], protocol: rule[ 'protocol' ]
       }
 
-      if single_machine.synced_folders
-        has_multi_machine_synced_folders = multi_machine_shared_synced_folders[ multi_machine_index ]
-
-        if ( not is_multi_machine_enabled ) || has_multi_machine_synced_folders
-          synced_folders.each { | machine_synced_folder |
-            machine.vm.synced_folder machine_synced_folder[ 'host' ], machine_synced_folder[ 'guest' ]
-          }
-        end
-      end
+      DockerBox::get_synced_folders( 'config.yaml', multi_machine_index ).each { | synced_folder |
+        machine.vm.synced_folder synced_folder[ 'host' ], synced_folder[ 'guest' ]
+      }
 
       if DockerBox::is_multi_machine_enabled( multi_machine )
         machine.vm.network "private_network", ip: "#{ ip }"
