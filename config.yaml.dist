@@ -43,11 +43,13 @@ single_machine:
   # default : false
   # warning : in multi machine mode, this setting is not working properly due to
   # a bug in Vagrant preventing machine to boot. As a workaround you can add the
-  # public network on the machine manually using hypervisor features.
+  # public network on the machine manually using hypervisor features or better,
+  # set a private network all machine in the setup to properly communicate with
+  # each other
   create_public_network: false
 
   # Forwarding rules allowing packet redirections from host to guest
-  # object : an isntance contains 3 properties, a host port, a guest port and
+  # object : an instance contains 3 properties, a host port, a guest port and
   #          a protocol :
   #          Host and guest ports are valid port numbers between 0 and 65535,
   #          protocol being either tcp or udp
@@ -238,6 +240,8 @@ multi_machine:
   # - true
   # - false
   # will enable a share of synced folder only for the second machine.
+  # note: the current directory of this vagrant machine is always shared and
+  #       mounted in the /vagrant directory on the guest
   shared_synced_folders:
 
   # Prefixes to be used when defining a vm in a multi machine setup. By default,
@@ -332,3 +336,4 @@ multi_machine:
   # will assign 1GB for the first machine, 2GB for the second then 4GB for the
   # third.
   memories:
+
