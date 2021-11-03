@@ -2,7 +2,7 @@ Vagrant.require_version '>= 2.2.0'
 
 VAGRANTFILE_API_VERSION = '2'
 BOX_NAME = 'metabarj0/DockerBox'
-REQUIRED_BOX_VERSION = '>= 3.0.0'
+REQUIRED_BOX_VERSION = '>= 3.0.1'
 CONFIG_FILE_NAME = 'config.yaml'
 
 require './modules/dockerbox'

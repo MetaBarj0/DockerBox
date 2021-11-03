@@ -164,7 +164,7 @@ provisioning:
   # string : if more than one character are specified, only the first one will
   # be used
   # default : '='
-  kv_assignement_operator: '='
+  kv_assignment_operator: '='
 
   # Key-value pair records to store in the db file if set. Should any item be
   # redefined more than once using the same key, the last defined item will take

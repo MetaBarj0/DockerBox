@@ -77,7 +77,7 @@ module DockerBox
     end
 
     def from_machine_forwarded_ports( index )
-      return can_setup_forwarded_ports_for_machine( index ) ? single_machine.forwarded_ports.select { | rule | rule } : []
+      return can_setup_forwarded_ports_for_machine( index ) ? @single_machine.forwarded_ports.select { | rule | rule } : []
     end
 
     def from_machine_synced_folders( index )
@@ -139,7 +139,7 @@ module DockerBox
         def docker_volume_auto_extend() @configuration[ 'provisioning' ][ 'docker_volume_auto_extend' ] ? 1 : 0 end;
         def extra_packages()            ( defined? @configuration[ 'provisioning' ][ 'extra_packages' ].join ) ? @configuration[ 'provisioning' ][ 'extra_packages' ].join(' ') : '' end;
         def kv_db_file()                @configuration[ 'provisioning' ][ 'kv_db_file' ].dup() end;
-        def kv_db_file_create_link()    @configuration[ 'provisioning' ][ 'kv_db_file_create_link ' ] ? 1 : 0 end;
+        def kv_db_file_create_link()    @configuration[ 'provisioning' ][ 'kv_db_file_create_link' ] ? 1 : 0 end;
         def kv_record_separator()       @configuration[ 'provisioning' ][ 'kv_record_separator' ].dup() end;
         def kv_assignment_operator()    @configuration[ 'provisioning' ][ 'kv_assignment_operator' ].dup() end;
         def kv_db_records()             ( defined? @configuration[ 'provisioning' ][ 'kv_db_records' ].join ) ? @configuration[ 'provisioning' ][ 'kv_db_records' ].join( kv_record_separator ) : '' end;

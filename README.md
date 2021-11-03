@@ -7,7 +7,7 @@ As its core, it relies on a minimal installation of Alpine Linux.
 It supports customisable provisioning through a comprehensible configuration in
 a yaml file.
 
-<https://app.vagrantup.com/metabarj0/boxes/DockerBox/versions/3.0.0> is the
+<https://app.vagrantup.com/metabarj0/boxes/DockerBox/versions/3.0.1> is the
 latest supported version.
 
 ## getting started
