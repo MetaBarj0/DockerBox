@@ -9,22 +9,9 @@ configuration = DockerBox::read_configuration( 'config.yaml' )
 DockerBox::install_extra_plugins_from_configuration( configuration )
 DockerBox::setup_vagrant_provider_from_configuration( configuration )
 single_machine = DockerBox::get_single_machine_properties( configuration )
+provision = DockerBox::get_provision_properties( configuration )
 
 Vagrant.configure( "2" ) do | config |
-
-  # provisionning from config.yaml(.dist)
-  provision_zoneinfo_region           = configuration[ 'provisioning' ][ 'zoneinfo_region' ]
-  provision_zoneinfo_city             = configuration[ 'provisioning' ][ 'zoneinfo_city' ]
-  provision_keymap                    = configuration[ 'provisioning' ][ 'keymap' ]
-  provision_keymap_variant            = configuration[ 'provisioning' ][ 'keymap_variant' ]
-  provision_docker_volume_auto_extend = configuration[ 'provisioning' ][ 'docker_volume_auto_extend' ] ? 1 : 0
-  provision_extra_packages            = ( defined? configuration[ 'provisioning' ][ 'extra_packages' ].join ) ? configuration[ 'provisioning' ][ 'extra_packages' ].join(' ') : ''
-  kv_db_file                          = configuration[ 'provisioning' ][ 'kv_db_file' ]
-  kv_db_file_create_link              = configuration[ 'provisioning' ][ 'kv_db_file_create_link ' ] ? 1 : 0
-  kv_record_separator                 = configuration[ 'provisioning' ][ 'kv_record_separator' ]
-  kv_assignment_operator              = configuration[ 'provisioning' ][ 'kv_assignment_operator' ]
-  kv_db_records                       = ( defined? configuration[ 'provisioning' ][ 'kv_db_records' ].join ) ? configuration[ 'provisioning' ][ 'kv_db_records' ].join( kv_record_separator ) : ''
-
   # multi-machine configuration from config.yaml(.dist)
   multi_machine_ip_addresses           = configuration[ 'multi_machine' ][ 'ip_addresses' ] || [ '' ]
   multi_machine_create_public_network  = configuration[ 'multi_machine' ][ 'create_public_network' ] || []
@@ -155,17 +142,17 @@ Vagrant.configure( "2" ) do | config |
                                     env:
                                     {
                                       "MACHINE_HOSTNAME"          => machine.vm.hostname,
-                                      "ZONEINFO_REGION"           => provision_zoneinfo_region,
-                                      "ZONEINFO_CITY"             => provision_zoneinfo_city,
-                                      "KEYMAP"                    => provision_keymap,
-                                      "KEYMAP_VARIANT"            => provision_keymap_variant,
-                                      "EXTRA_PACKAGES"            => provision_extra_packages,
-                                      "DOCKER_VOLUME_AUTO_EXTEND" => provision_docker_volume_auto_extend,
-                                      "KV_DB_FILE"                => kv_db_file,
-                                      "KV_DB_FILE_CREATE_LINK"    => kv_db_file_create_link,
-                                      "KV_RECORD_SEPARATOR"       => kv_record_separator,
-                                      "KV_ASSIGNMENT_OPERATOR"    => kv_assignment_operator,
-                                      "KV_DB_RECORDS"             => kv_db_records
+                                      "ZONEINFO_REGION"           => provision.zoneinfo_region,
+                                      "ZONEINFO_CITY"             => provision.zoneinfo_city,
+                                      "KEYMAP"                    => provision.keymap,
+                                      "KEYMAP_VARIANT"            => provision.keymap_variant,
+                                      "EXTRA_PACKAGES"            => provision.extra_packages,
+                                      "DOCKER_VOLUME_AUTO_EXTEND" => provision.docker_volume_auto_extend,
+                                      "KV_DB_FILE"                => provision.kv_db_file,
+                                      "KV_DB_FILE_CREATE_LINK"    => provision.kv_db_file_create_link,
+                                      "KV_RECORD_SEPARATOR"       => provision.kv_record_separator,
+                                      "KV_ASSIGNMENT_OPERATOR"    => provision.kv_assignment_operator,
+                                      "KV_DB_RECORDS"             => provision.kv_db_records
                                     }
 
     end

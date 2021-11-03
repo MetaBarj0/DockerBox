@@ -91,4 +91,24 @@ module DockerBox
       def ssh_command_extra_args() @configuration[ 'single_machine' ][ 'ssh_command_extra_args' ] || [] end;
     end.new( configuration )
   end
+
+  def self.get_provision_properties( configuration )
+    return Class.new do
+      def initialize( configuration )
+        @configuration = configuration
+      end
+
+      def zoneinfo_region()           @configuration[ 'provisioning' ][ 'zoneinfo_region' ] end;
+      def zoneinfo_city()             @configuration[ 'provisioning' ][ 'zoneinfo_city' ] end;
+      def keymap()                    @configuration[ 'provisioning' ][ 'keymap' ] end;
+      def keymap_variant()            @configuration[ 'provisioning' ][ 'keymap_variant' ] end;
+      def docker_volume_auto_extend() @configuration[ 'provisioning' ][ 'docker_volume_auto_extend' ] ? 1 : 0 end;
+      def extra_packages()            ( defined? @configuration[ 'provisioning' ][ 'extra_packages' ].join ) ? @configuration[ 'provisioning' ][ 'extra_packages' ].join(' ') : '' end;
+      def kv_db_file()                @configuration[ 'provisioning' ][ 'kv_db_file' ] end;
+      def kv_db_file_create_link()    @configuration[ 'provisioning' ][ 'kv_db_file_create_link ' ] ? 1 : 0 end;
+      def kv_record_separator()       @configuration[ 'provisioning' ][ 'kv_record_separator' ] end;
+      def kv_assignment_operator()    @configuration[ 'provisioning' ][ 'kv_assignment_operator' ] end;
+      def kv_db_records()             ( defined? @configuration[ 'provisioning' ][ 'kv_db_records' ].join ) ? @configuration[ 'provisioning' ][ 'kv_db_records' ].join( kv_record_separator ) : '' end;
+    end.new( configuration )
+  end
 end
