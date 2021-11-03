@@ -32,16 +32,15 @@ def ensure_windows_hyperv_is_disable_when_up_or_reload()
   end
 end
 
-def install_required_plugins()
-  required_plugins = %w( vagrant-vbguest )
+def install_specified_plugins( required_plugins )
   plugins_to_install = required_plugins.select { | plugin | not Vagrant.has_plugin? plugin }
 
   if not plugins_to_install.empty?
-    puts "Installing required plugins: #{ plugins_to_install.join( ' ' ) }"
+    puts "Installing specified plugins: #{ plugins_to_install.join( ' ' ) }"
     if install_plugin_dependencies( plugins_to_install )
       exec "vagrant #{ ARGV.join( ' ' ) }"
     else
-      abort "Installation of one or more required plugins has failed. Aborting."
+      abort "Installation of one or more specified plugins or their dependencies have failed. Aborting."
     end
   end
 end
@@ -58,29 +57,17 @@ def read_configuration( config_file_name )
   return YAML.load_file( config_file_name )
 end
 
-ensure_windows_hyperv_is_disable_when_up_or_reload()
-install_required_plugins()
-
-Vagrant.configure( "2" ) do | config |
-  configuration = read_configuration( 'config.yaml' )
-
-  # install all extra plugins then, restart vagrant process
+def install_extra_plugins_from_configuration( configuration )
   extra_plugins = configuration[ 'vagrant' ][ 'extra_plugins' ]
 
-  extra_plugins_to_install = ''
-  if extra_plugins
-    extra_plugins_to_install = extra_plugins.select { | plugin | not Vagrant.has_plugin? plugin }
+  if not extra_plugins
+    return
   end
 
-  if not extra_plugins_to_install.empty?
-    puts "Installing extra plugins: #{ extra_plugins_to_install.join( ' ' ) }"
-    if install_plugin_dependencies( extra_plugins_to_install )
-      exec "vagrant #{ ARGV.join( ' ' ) }"
-    else
-      abort "Installation of one or more extra plugins has failed. Aborting."
-    end
-  end
+  install_specified_plugins( extra_plugins )
+end
 
+def setup_vagrant_provider_from_configuration( configuration )
   vagrant_provider = configuration[ 'vagrant' ][ 'default_provider' ]
 
   if vagrant_provider != "virtualbox"
@@ -88,7 +75,15 @@ Vagrant.configure( "2" ) do | config |
   end
 
   ENV[ 'VAGRANT_DEFAULT_PROVIDER' ] = vagrant_provider
+end
 
+ensure_windows_hyperv_is_disable_when_up_or_reload()
+install_specified_plugins( %w( vagrant-vbguest ) )
+configuration = read_configuration( 'config.yaml' )
+install_extra_plugins_from_configuration( configuration )
+setup_vagrant_provider_from_configuration( configuration )
+
+Vagrant.configure( "2" ) do | config |
   # single machine setup configuration from config.yaml(.dist)
   hostname                = configuration[ 'single_machine' ][ 'hostname' ]
   machine_cpu             = configuration[ 'single_machine' ][ 'cpu' ]
