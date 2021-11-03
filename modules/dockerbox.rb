@@ -191,4 +191,34 @@ module DockerBox
       end
     end
   end
+
+  def self.has_public_network( config_file_name, multi_machine_index )
+    configuration = DockerBox::read_configuration( config_file_name )
+    single_machine = DockerBox::get_single_machine_properties( configuration )
+    multi_machine = DockerBox::get_multi_machine_properties( configuration )
+
+    # vagrant bug : not supported but should work as soon as vagrant has fixed its stuff
+    is_unique_machine_public_network_enabled = single_machine.create_public_network && ( not is_multi_machine_enabled )
+    is_multi_machine_public_network_enabled = multi_machine.create_public_network[ multi_machine_index ]
+
+    return is_unique_machine_public_network_enabled || is_multi_machine_public_network_enabled
+  end
+
+  def self.can_setup_forwarded_ports( config_file_name, multi_machine_index )
+    if multi_machine_index > 0
+      return false
+    end
+
+    configuration = DockerBox::read_configuration( config_file_name )
+    single_machine = DockerBox::get_single_machine_properties( configuration )
+
+    return single_machine.forwarded_ports && single_machine.forwarded_ports.length > 0
+  end
+
+  def self.get_forwarded_ports( config_file_name, multi_machine_index )
+    configuration = DockerBox::read_configuration( config_file_name )
+    single_machine = DockerBox::get_single_machine_properties( configuration )
+
+    return DockerBox::can_setup_forwarded_ports( config_file_name, multi_machine_index ) ? single_machine.forwarded_ports : []
+  end
 end

@@ -27,22 +27,13 @@ Vagrant.configure( "2" ) do | config |
       machine.vm.box_version = ">= 3.0.0"
       machine.vm.hostname = multi_machines_hostname_builder.get_next_hostname( multi_machine_index )
 
-      # vagrant bug : not supported but should work as soon as vagrant has fixed its stuff
-      is_unique_machine_public_network_enabled = single_machine.create_public_network && ( not is_multi_machine_enabled )
-      is_multi_machine_public_network_enabled = multi_machine.create_public_network[ multi_machine_index ]
-
-      if is_unique_machine_public_network_enabled || is_multi_machine_public_network_enabled
+      if DockerBox::has_public_network( 'config.yaml', multi_machine_index )
         machine.vm.network "public_network"
       end
 
-      # forwarding only applies on the first machine
-      if( multi_machine_index == 0 )
-        if single_machine.forwarded_ports
-          single_machine.forwarded_ports.each { | rule |
-            machine.vm.network "forwarded_port", guest: rule[ 'guest' ], host: rule[ 'host' ], protocol: rule[ 'protocol' ]
-          }
-        end
-      end
+      DockerBox::get_forwarded_ports( 'config.yaml', multi_machine_index ).each { | rule |
+        machine.vm.network "forwarded_port", guest: rule[ 'guest' ], host: rule[ 'host' ], protocol: rule[ 'protocol' ]
+      }
 
       if single_machine.synced_folders
         has_multi_machine_synced_folders = multi_machine_shared_synced_folders[ multi_machine_index ]
