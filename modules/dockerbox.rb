@@ -128,4 +128,38 @@ module DockerBox
       def memories()               @configuration[ 'multi_machine' ][ 'memories' ] end;
     end.new( configuration )
   end
+
+  def self.is_multi_machine_enabled( multi_machine )
+    return multi_machine.ip_addresses.length() > 1
+  end
+
+  class MultiMachineVmPrefixBuilder
+    def initialize( config_file_name )
+      @multi_machines_vm_prefix_map = {}
+      @configuration = DockerBox::read_configuration( config_file_name )
+      @multi_machine = DockerBox::get_multi_machine_properties( @configuration )
+    end
+
+    def get_next_vm_prefix( multi_machine_index )
+      machine_name = 'default'
+
+      if not DockerBox::is_multi_machine_enabled( @multi_machine )
+        return machine_name
+      end
+
+      vm_prefix = @multi_machine.vm_prefixes[ multi_machine_index ]
+
+      if ( vm_prefix == nil ) || ( vm_prefix.empty? )
+        vm_prefix = "machine"
+      end
+
+      if @multi_machines_vm_prefix_map.include?( vm_prefix )
+        @multi_machines_vm_prefix_map[ vm_prefix ] = @multi_machines_vm_prefix_map[ vm_prefix ] + 1
+      else
+        @multi_machines_vm_prefix_map[ vm_prefix ] = 0
+      end
+
+      return "#{ vm_prefix }-#{ @multi_machines_vm_prefix_map[ vm_prefix ] }"
+    end
+  end
 end

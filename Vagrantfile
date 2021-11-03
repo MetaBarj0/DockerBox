@@ -13,42 +13,25 @@ provision = DockerBox::get_provision_properties( configuration )
 multi_machine = DockerBox::get_multi_machine_properties( configuration )
 
 Vagrant.configure( "2" ) do | config |
-  is_multi_machine_enabled = multi_machine.ip_addresses.length() > 1
-
-  multi_machines_vm_prefix_map = {}
+  multi_machines_vm_prefix_builder = DockerBox::MultiMachineVmPrefixBuilder.new( 'config.yaml' )
 
   multi_machines_hostname_prefix_map = {}
 
   # creating machines
   multi_machine.ip_addresses.each_with_index do | ip, multi_machine_index |
-    machine_name = 'default'
-    if is_multi_machine_enabled
-      vm_prefix = multi_machine_vm_prefixes[ multi_machine_index ]
-
-      if ( vm_prefix == nil ) || ( vm_prefix.empty? )
-        vm_prefix = "machine"
-      end
-
-      if multi_machines_vm_prefix_map.include?( vm_prefix )
-        multi_machines_vm_prefix_map[ vm_prefix ] = multi_machines_vm_prefix_map[ vm_prefix ] + 1
-      else
-        multi_machines_vm_prefix_map[ vm_prefix ] = 0
-      end
-
-      machine_name = "#{ vm_prefix }-#{ multi_machines_vm_prefix_map[ vm_prefix ] }"
-    end
-
     config.ssh.username = "docker"
 
     if single_machine.ssh_command_extra_args.length > 0
       config.ssh.extra_args = single_machine.ssh_command_extra_args
     end
 
+    machine_name = multi_machines_vm_prefix_builder.get_next_vm_prefix( multi_machine_index )
+
     config.vm.define "#{ machine_name }" do | machine |
       machine.vm.box = "metabarj0/DockerBox"
       machine.vm.box_version = ">= 3.0.0"
 
-      if is_multi_machine_enabled
+      if DockerBox::is_multi_machine_enabled( multi_machine )
         hostname_prefix = multi_machine_hostname_prefixes[ multi_machine_index ]
 
         if ( hostname_prefix == nil ) || hostname_prefix.empty?
@@ -93,13 +76,13 @@ Vagrant.configure( "2" ) do | config |
         end
       end
 
-      if is_multi_machine_enabled
+      if DockerBox::is_multi_machine_enabled( multi_machine )
         machine.vm.network "private_network", ip: "#{ ip }"
       end
 
       current_machine_cpu = single_machine.cpu
 
-      if is_multi_machine_enabled
+      if DockerBox::is_multi_machine_enabled( multi_machine )
         if ( not multi_machine_cpus[ multi_machine_index ] == nil ) && ( multi_machine_cpus[ multi_machine_index ] > 0 )
           current_machine_cpu = multi_machine_cpus[ multi_machine_index ]
         end
@@ -107,7 +90,7 @@ Vagrant.configure( "2" ) do | config |
 
       current_machine_cpu_cap = single_machine.cpu_cap
 
-      if is_multi_machine_enabled
+      if DockerBox::is_multi_machine_enabled( multi_machine )
         if ( not multi_machine_cpu_caps[ multi_machine_index ] == nil ) && ( multi_machine_cpu_caps[ multi_machine_index ] > 0 )
           current_machine_cpu_cap = multi_machine_cpu_caps[ multi_machine_index ]
         end
@@ -115,7 +98,7 @@ Vagrant.configure( "2" ) do | config |
 
       current_machine_memory = single_machine.memory
 
-      if is_multi_machine_enabled
+      if DockerBox::is_multi_machine_enabled( multi_machine )
         if ( not multi_machine_memories[ multi_machine_index ] == nil ) && ( multi_machine_memories[ multi_machine_index ] > 0 )
           current_machine_memory = multi_machine_memories[ multi_machine_index ]
         end
