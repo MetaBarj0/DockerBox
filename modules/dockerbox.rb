@@ -111,4 +111,21 @@ module DockerBox
       def kv_db_records()             ( defined? @configuration[ 'provisioning' ][ 'kv_db_records' ].join ) ? @configuration[ 'provisioning' ][ 'kv_db_records' ].join( kv_record_separator ) : '' end;
     end.new( configuration )
   end
+
+  def self.get_multi_machine_properties( configuration )
+    return Class.new do
+      def initialize( configuration )
+        @configuration = configuration
+      end
+
+      def ip_addresses()           @configuration[ 'multi_machine' ][ 'ip_addresses' ] || [ '' ] end;
+      def create_public_network()  @configuration[ 'multi_machine' ][ 'create_public_network' ] || [] end;
+      def shared_synced_folders()  @configuration[ 'multi_machine' ][ 'shared_synced_folders' ] || [] end;
+      def vm_prefixes()            @configuration[ 'multi_machine' ][ 'vm_prefixes' ] || [] end;
+      def hostname_prefixes()      @configuration[ 'multi_machine' ][ 'hostname_prefixes' ] || [] end;
+      def cpus()                   @configuration[ 'multi_machine' ][ 'cpus' ] end;
+      def cpu_caps()               @configuration[ 'multi_machine' ][ 'cpu_caps' ] end;
+      def memories()               @configuration[ 'multi_machine' ][ 'memories' ] end;
+    end.new( configuration )
+  end
 end

@@ -10,26 +10,17 @@ DockerBox::install_extra_plugins_from_configuration( configuration )
 DockerBox::setup_vagrant_provider_from_configuration( configuration )
 single_machine = DockerBox::get_single_machine_properties( configuration )
 provision = DockerBox::get_provision_properties( configuration )
+multi_machine = DockerBox::get_multi_machine_properties( configuration )
 
 Vagrant.configure( "2" ) do | config |
-  # multi-machine configuration from config.yaml(.dist)
-  multi_machine_ip_addresses           = configuration[ 'multi_machine' ][ 'ip_addresses' ] || [ '' ]
-  multi_machine_create_public_network  = configuration[ 'multi_machine' ][ 'create_public_network' ] || []
-  multi_machine_shared_synced_folders  = configuration[ 'multi_machine' ][ 'shared_synced_folders' ] || []
-  multi_machine_vm_prefixes            = configuration[ 'multi_machine' ][ 'vm_prefixes' ] || []
-  multi_machine_hostname_prefixes      = configuration[ 'multi_machine' ][ 'hostname_prefixes' ] || []
-  multi_machine_cpus                   = configuration[ 'multi_machine' ][ 'cpus' ]
-  multi_machine_cpu_caps               = configuration[ 'multi_machine' ][ 'cpu_caps' ]
-  multi_machine_memories               = configuration[ 'multi_machine' ][ 'memories' ]
-
-  is_multi_machine_enabled = multi_machine_ip_addresses.length() > 1
+  is_multi_machine_enabled = multi_machine.ip_addresses.length() > 1
 
   multi_machines_vm_prefix_map = {}
 
   multi_machines_hostname_prefix_map = {}
 
   # creating machines
-  multi_machine_ip_addresses.each_with_index do | ip, multi_machine_index |
+  multi_machine.ip_addresses.each_with_index do | ip, multi_machine_index |
     machine_name = 'default'
     if is_multi_machine_enabled
       vm_prefix = multi_machine_vm_prefixes[ multi_machine_index ]
@@ -77,7 +68,7 @@ Vagrant.configure( "2" ) do | config |
 
       # vagrant bug : not supported but should work as soon as vagrant has fixed its stuff
       is_unique_machine_public_network_enabled = single_machine.create_public_network && ( not is_multi_machine_enabled )
-      is_multi_machine_public_network_enabled = multi_machine_create_public_network[ multi_machine_index ]
+      is_multi_machine_public_network_enabled = multi_machine.create_public_network[ multi_machine_index ]
 
       if is_unique_machine_public_network_enabled || is_multi_machine_public_network_enabled
         machine.vm.network "public_network"
