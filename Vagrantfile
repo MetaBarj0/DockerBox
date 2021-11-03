@@ -5,22 +5,17 @@ require './modules/dockerbox'
 
 DockerBox::ensure_windows_hyperv_is_disable_when_up_or_reload()
 DockerBox::install_specified_plugins( %w( vagrant-vbguest ) )
-configuration = DockerBox::read_configuration( 'config.yaml' )
-DockerBox::install_extra_plugins_from_configuration( configuration )
-DockerBox::setup_vagrant_provider_from_configuration( configuration )
+DockerBox::install_extra_plugins_from_configuration( 'config.yaml' )
+DockerBox::setup_vagrant_provider_from_configuration( 'config.yaml' )
 
 Vagrant.configure( "2" ) do | config |
-  single_machine = DockerBox::get_single_machine_properties( configuration )
-  multi_machine = DockerBox::get_multi_machine_properties( configuration )
-  provision = DockerBox::get_provision_properties( configuration )
-
   multi_machines_vm_prefix_builder = DockerBox::MultiMachineVmPrefixBuilder.new( 'config.yaml' )
   multi_machines_hostname_builder = DockerBox::MultiMachineHostnameBuilder.new( 'config.yaml' )
 
   # creating machines
-  multi_machine.ip_addresses.each_with_index do | ip, multi_machine_index |
+  DockerBox::get_machines_ip_addresses( 'config.yaml' ).each_with_index do | ip, multi_machine_index |
     config.ssh.username = "docker"
-    config.ssh.extra_args = single_machine.ssh_command_extra_args
+    config.ssh.extra_args = DockerBox::get_machine_ssh_command_extra_args( 'config.yaml' )
 
     config.vm.define "#{ multi_machines_vm_prefix_builder.get_next_vm_prefix( multi_machine_index ) }" do | machine |
       machine.vm.box = "metabarj0/DockerBox"
@@ -55,17 +50,17 @@ Vagrant.configure( "2" ) do | config |
                                     env:
                                     {
                                       "MACHINE_HOSTNAME"          => machine.vm.hostname,
-                                      "ZONEINFO_REGION"           => provision.zoneinfo_region,
-                                      "ZONEINFO_CITY"             => provision.zoneinfo_city,
-                                      "KEYMAP"                    => provision.keymap,
-                                      "KEYMAP_VARIANT"            => provision.keymap_variant,
-                                      "EXTRA_PACKAGES"            => provision.extra_packages,
-                                      "DOCKER_VOLUME_AUTO_EXTEND" => provision.docker_volume_auto_extend,
-                                      "KV_DB_FILE"                => provision.kv_db_file,
-                                      "KV_DB_FILE_CREATE_LINK"    => provision.kv_db_file_create_link,
-                                      "KV_RECORD_SEPARATOR"       => provision.kv_record_separator,
-                                      "KV_ASSIGNMENT_OPERATOR"    => provision.kv_assignment_operator,
-                                      "KV_DB_RECORDS"             => provision.kv_db_records
+                                      "ZONEINFO_REGION"           => DockerBox::get_provision_properties( 'config.yaml' ).zoneinfo_region,
+                                      "ZONEINFO_CITY"             => DockerBox::get_provision_properties( 'config.yaml' ).zoneinfo_city,
+                                      "KEYMAP"                    => DockerBox::get_provision_properties( 'config.yaml' ).keymap,
+                                      "KEYMAP_VARIANT"            => DockerBox::get_provision_properties( 'config.yaml' ).keymap_variant,
+                                      "EXTRA_PACKAGES"            => DockerBox::get_provision_properties( 'config.yaml' ).extra_packages,
+                                      "DOCKER_VOLUME_AUTO_EXTEND" => DockerBox::get_provision_properties( 'config.yaml' ).docker_volume_auto_extend,
+                                      "KV_DB_FILE"                => DockerBox::get_provision_properties( 'config.yaml' ).kv_db_file,
+                                      "KV_DB_FILE_CREATE_LINK"    => DockerBox::get_provision_properties( 'config.yaml' ).kv_db_file_create_link,
+                                      "KV_RECORD_SEPARATOR"       => DockerBox::get_provision_properties( 'config.yaml' ).kv_record_separator,
+                                      "KV_ASSIGNMENT_OPERATOR"    => DockerBox::get_provision_properties( 'config.yaml' ).kv_assignment_operator,
+                                      "KV_DB_RECORDS"             => DockerBox::get_provision_properties( 'config.yaml' ).kv_db_records
                                     }
 
     end

@@ -55,7 +55,9 @@ module DockerBox
     return YAML.load_file( config_file_name )
   end
 
-  def self.install_extra_plugins_from_configuration( configuration )
+  def self.install_extra_plugins_from_configuration( config_file_name )
+    configuration = DockerBox::read_configuration( config_file_name )
+
     extra_plugins = configuration[ 'vagrant' ][ 'extra_plugins' ]
 
     if not extra_plugins
@@ -65,7 +67,9 @@ module DockerBox
     install_specified_plugins( extra_plugins )
   end
 
-  def self.setup_vagrant_provider_from_configuration( configuration )
+  def self.setup_vagrant_provider_from_configuration( config_file_name )
+    configuration = DockerBox::read_configuration( config_file_name )
+
     vagrant_provider = configuration[ 'vagrant' ][ 'default_provider' ]
 
     if vagrant_provider != "virtualbox"
@@ -92,10 +96,10 @@ module DockerBox
     end.new( configuration )
   end
 
-  def self.get_provision_properties( configuration )
+  def self.get_provision_properties( config_file_name )
     return Class.new do
-      def initialize( configuration )
-        @configuration = configuration
+      def initialize( config_file_name )
+        @configuration = DockerBox::read_configuration( config_file_name )
       end
 
       def zoneinfo_region()           @configuration[ 'provisioning' ][ 'zoneinfo_region' ] end;
@@ -109,7 +113,7 @@ module DockerBox
       def kv_record_separator()       @configuration[ 'provisioning' ][ 'kv_record_separator' ] end;
       def kv_assignment_operator()    @configuration[ 'provisioning' ][ 'kv_assignment_operator' ] end;
       def kv_db_records()             ( defined? @configuration[ 'provisioning' ][ 'kv_db_records' ].join ) ? @configuration[ 'provisioning' ][ 'kv_db_records' ].join( kv_record_separator ) : '' end;
-    end.new( configuration )
+    end.new( config_file_name )
   end
 
   def self.get_multi_machine_properties( configuration )
@@ -289,5 +293,20 @@ module DockerBox
     if multi_machine.memories[ multi_machine_index ] && ( multi_machine.memories[ multi_machine_index ] > 0 )
       return multi_machine.memories[ multi_machine_index ]
     end
+
+  end
+
+  def self.get_machines_ip_addresses( config_file_name )
+    configuration = DockerBox::read_configuration( config_file_name )
+    multi_machine = DockerBox::get_multi_machine_properties( configuration )
+
+    return multi_machine.ip_addresses
+  end
+
+  def self.get_machine_ssh_command_extra_args( config_file_name )
+    configuration = DockerBox::read_configuration( config_file_name )
+    single_machine = DockerBox::get_single_machine_properties( configuration )
+
+    return single_machine.ssh_command_extra_args
   end
 end
