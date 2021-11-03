@@ -129,12 +129,16 @@ module DockerBox
     end.new( configuration )
   end
 
-  def self.is_multi_machine_enabled( multi_machine )
+  def self.is_multi_machine_enabled( config_file_name )
+    configuration = DockerBox::read_configuration( config_file_name )
+    multi_machine = DockerBox::get_multi_machine_properties( configuration )
+
     return multi_machine.ip_addresses.length() > 1
   end
 
   class MultiMachineVmPrefixBuilder
     def initialize( config_file_name )
+      @config_file_name = config_file_name
       configuration = DockerBox::read_configuration( config_file_name )
       @multi_machine = DockerBox::get_multi_machine_properties( configuration )
       @multi_machines_vm_prefix_map = {}
@@ -143,7 +147,7 @@ module DockerBox
     def get_next_vm_prefix( multi_machine_index )
       machine_name = 'default'
 
-      if not DockerBox::is_multi_machine_enabled( @multi_machine )
+      if not DockerBox::is_multi_machine_enabled( @config_file_name )
         return machine_name
       end
 
@@ -165,6 +169,7 @@ module DockerBox
 
   class MultiMachineHostnameBuilder
     def initialize( config_file_name )
+      @config_file_name = config_file_name
       configuration = DockerBox::read_configuration( config_file_name )
       @single_machine = DockerBox::get_single_machine_properties( configuration )
       @multi_machine = DockerBox::get_multi_machine_properties( configuration )
@@ -174,7 +179,7 @@ module DockerBox
     def get_next_hostname( multi_machine_index )
       hostname = @single_machine.hostname
 
-      if DockerBox::is_multi_machine_enabled( @multi_machine )
+      if DockerBox::is_multi_machine_enabled( @config_file_name )
         hostname_prefix = @multi_machine.hostname_prefixes[ multi_machine_index ]
 
         if ( hostname_prefix == nil ) || hostname_prefix.empty?
@@ -242,5 +247,19 @@ module DockerBox
     end
 
     return []
+  end
+
+  def self.get_machine_cpu_count( config_file_name, multi_machine_index )
+    configuration = DockerBox::read_configuration( config_file_name )
+    single_machine = DockerBox::get_single_machine_properties( configuration )
+    multi_machine = DockerBox::get_multi_machine_properties( configuration )
+
+    if not DockerBox::is_multi_machine_enabled( 'config.yaml' )
+      return single_machine.cpu
+    end
+
+    if ( multi_machine.cpus[ multi_machine_index ] ) && ( multi_machine.cpus[ multi_machine_index ] > 0 )
+      return multi_machine.cpus[ multi_machine_index ]
+    end
   end
 end

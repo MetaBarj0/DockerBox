@@ -39,21 +39,13 @@ Vagrant.configure( "2" ) do | config |
         machine.vm.synced_folder synced_folder[ 'host' ], synced_folder[ 'guest' ]
       }
 
-      if DockerBox::is_multi_machine_enabled( multi_machine )
+      if DockerBox::is_multi_machine_enabled( 'config.yaml' )
         machine.vm.network "private_network", ip: "#{ ip }"
-      end
-
-      current_machine_cpu = single_machine.cpu
-
-      if DockerBox::is_multi_machine_enabled( multi_machine )
-        if ( not multi_machine_cpus[ multi_machine_index ] == nil ) && ( multi_machine_cpus[ multi_machine_index ] > 0 )
-          current_machine_cpu = multi_machine_cpus[ multi_machine_index ]
-        end
       end
 
       current_machine_cpu_cap = single_machine.cpu_cap
 
-      if DockerBox::is_multi_machine_enabled( multi_machine )
+      if DockerBox::is_multi_machine_enabled( 'config.yaml' )
         if ( not multi_machine_cpu_caps[ multi_machine_index ] == nil ) && ( multi_machine_cpu_caps[ multi_machine_index ] > 0 )
           current_machine_cpu_cap = multi_machine_cpu_caps[ multi_machine_index ]
         end
@@ -61,7 +53,7 @@ Vagrant.configure( "2" ) do | config |
 
       current_machine_memory = single_machine.memory
 
-      if DockerBox::is_multi_machine_enabled( multi_machine )
+      if DockerBox::is_multi_machine_enabled( 'config.yaml' )
         if ( not multi_machine_memories[ multi_machine_index ] == nil ) && ( multi_machine_memories[ multi_machine_index ] > 0 )
           current_machine_memory = multi_machine_memories[ multi_machine_index ]
         end
@@ -69,7 +61,8 @@ Vagrant.configure( "2" ) do | config |
 
       # virtualbox provider specific configuration with defaults
       machine.vm.provider "virtualbox" do | v |
-        v.customize [ "modifyvm", :id, "--cpus", current_machine_cpu ]
+        v.customize [ "modifyvm", :id, "--cpus", DockerBox::get_machine_cpu_count( 'config.yaml', multi_machine_index ) ]
+
         v.customize [ "modifyvm", :id, "--cpuexecutioncap", current_machine_cpu_cap ]
         v.customize [ "modifyvm", :id, "--memory", current_machine_memory ]
       end
