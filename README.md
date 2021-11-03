@@ -1,37 +1,50 @@
 # DockerBox
 
-Alpine Linux based image with docker. Customizable provisioning.
-<https://app.vagrantup.com/metabarj0/boxes/DockerBox/versions/2.0.1> is the
-minimal supported version.
+An alternative to Docker Desktop working with Vagrant and Virtualbox.
 
-## configuration
+As its core, it relies on a minimal installation of Alpine Linux.
 
-You can customize the VM by creating a .env file from the provided .env.dist
-template. Each variable's purpose is described as a comment.
+It supports customisable provisioning through a comprehensible configuration in
+a yaml file.
+
+<https://app.vagrantup.com/metabarj0/boxes/DockerBox/versions/3.0.0> is the
+latest supported version.
+
+## Configuration
+
+You can customize the created virtual machines by creating a `config.yaml` file
+from the provided `config.yaml.dist` template. Each variable's purpose is
+described as a comment.
 
 ## login
 
-There is 3 accounts :
+There are 3 accounts :
 
-- root    => vagrant  
-- vagrant => vagrant  
-- docker  => docker
+| login   | password |
+| ------- | -------- |
+| root    | vagrant  |
+| vagrant | vagrant  |
+| docker  | docker   |
+
+When you enter with ssh in one of created virtual machine by issuing the
+`vagrant ssh [machine_name|id]`, you'll be logged as `docker` and you'll be able
+to use all the docker tooling.
 
 ## storage
 
-This virtual machine is designed to be a docker host. Should your
-containerization projects grow in space, you can easily extend the storage
-allocated for docker without having to type a single command.
-First, add and/or extend a virtual disk file to your VM. You can do that
-using the virtualbox GUI.
-You can use any storage controller you want.
-Then, ensure the environment variable `DOCKER_VOLUME_AUTO_EXTEND` is set to
-`1` in your `.env` file. Finally, run `vagrant provision` to auto extend the
-storage for docker according to virtual disk files you added or resized.
+Virtual machines are designed to be a docker host. Should your containerization
+projects grow in space, you can easily extend the storage allocated for docker
+without having to type a single command.  First, add and/or extend a virtual
+disk file to your VM. You can do that using the hypervisor GUI.  You can use any
+storage controller you want.  Then, ensure the environment variable
+`provisioning.docker_volume_auto_extend` is set to `true` in your `config.yaml`
+file. Finally, run `vagrant provision` or `vagrant up --provision` or
+`vagrant reload --provision` to auto extend the storage for docker according to
+virtual disk files you added or resized.
 
 ## multi machine
 
 Multi machines configuration is fully supported (see
 <https://www.vagrantup.com/docs/multi-machine/)>).
-See in the `.env.dist` file configuration sections related to multi machine
-configuration for more information.
+See in the `config.yaml.dist` file configuration sections related to
+`multi_machine` configuration for more information.
