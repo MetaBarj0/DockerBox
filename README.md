@@ -10,6 +10,15 @@ a yaml file.
 <https://app.vagrantup.com/metabarj0/boxes/DockerBox/versions/3.0.0> is the
 latest supported version.
 
+## getting started
+
+- Clone this repository
+- Create a `config.yaml` file using the `config.yaml.dist` file provided in the
+  repository
+- Issue the `vagrant up` command
+- Enter in one of the created virtual machines using
+  `vagrant ssh [name|id] [-- extra_ssh_args]` command
+
 ## Configuration
 
 You can customize the created virtual machines by creating a `config.yaml` file
@@ -27,8 +36,8 @@ There are 3 accounts :
 | docker  | docker   |
 
 When you enter with ssh in one of created virtual machine by issuing the
-`vagrant ssh [machine_name|id]`, you'll be logged as `docker` and you'll be able
-to use all the docker tooling.
+`vagrant ssh [name|id] [-- extra_ssh_args]`, you'll be logged as `docker` and
+you'll be able to use all the docker tooling.
 
 ## storage
 
