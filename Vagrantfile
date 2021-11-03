@@ -42,8 +42,7 @@ Vagrant.configure( VAGRANTFILE_API_VERSION ) do | config |
       end
 
       machine.vm.provision "shell", path: "provisioning/provision-from-host.sh",
-                                    env:
-                                    {
+                                    env: {
                                       "MACHINE_HOSTNAME"          => machine.vm.hostname,
                                       "ZONEINFO_REGION"           => project.provisioning_properties().zoneinfo_region,
                                       "ZONEINFO_CITY"             => project.provisioning_properties().zoneinfo_city,
