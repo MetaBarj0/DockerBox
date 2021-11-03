@@ -1,12 +1,14 @@
 Vagrant.require_version '>= 2.2.0'
+
 VAGRANTFILE_API_VERSION = '2'
 BOX_NAME = 'metabarj0/DockerBox'
 REQUIRED_BOX_VERSION = '>= 3.0.0'
+CONFIG_FILE_NAME = 'config.yaml'
 
 require './modules/dockerbox'
 
 Vagrant.configure( VAGRANTFILE_API_VERSION ) do | config |
-  project = DockerBox::VagrantProject.new( 'config.yaml' )
+  project = DockerBox::VagrantProject.new( CONFIG_FILE_NAME )
 
   project.from_machines_ip_addresses.each_with_index do | ip, machine_index |
     config.ssh.username = "docker"
@@ -33,10 +35,10 @@ Vagrant.configure( VAGRANTFILE_API_VERSION ) do | config |
         machine.vm.network "private_network", ip: "#{ ip }"
       end
 
-      machine.vm.provider "virtualbox" do | v |
-        v.customize [ "modifyvm", :id, "--cpus", project.get_machine_cpu_count( machine_index ) ]
-        v.customize [ "modifyvm", :id, "--cpuexecutioncap", project.get_machine_cpu_cap( machine_index ) ]
-        v.customize [ "modifyvm", :id, "--memory", project.get_machine_memory( machine_index ) ]
+      machine.vm.provider "virtualbox" do | vm |
+        vm.customize [ "modifyvm", :id, "--cpus", project.get_machine_cpu_count( machine_index ) ]
+        vm.customize [ "modifyvm", :id, "--cpuexecutioncap", project.get_machine_cpu_cap( machine_index ) ]
+        vm.customize [ "modifyvm", :id, "--memory", project.get_machine_memory( machine_index ) ]
       end
 
       machine.vm.provision "shell", path: "provisioning/provision-from-host.sh",

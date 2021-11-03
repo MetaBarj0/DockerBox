@@ -163,7 +163,7 @@ module DockerBox
     def ensure_windows_hyperv_is_disable_when_up_or_reload()
       if( ARGV[ 0 ] == "up" || ARGV[ 0 ] == "reload" )
         if Vagrant::Util::Platform.windows? then
-          if not system "powershell -ExecutionPolicy ByPass ./WindowsHyperVDeactivation.ps1"
+          if not system "powershell -ExecutionPolicy ByPass ./platforms/windows/WindowsHyperVDeactivation.ps1"
             abort "Windows hyper-v deactivation has failed. Aborting."
           end
         end
