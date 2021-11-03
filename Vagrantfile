@@ -22,8 +22,7 @@ def install_plugin_dependencies( plugins )
   system "vagrant plugin update"
 end
 
-Vagrant.configure( "2" ) do | config |
-  # ensuring windows hyper-v optional features are disabled when bringing up the machine
+def ensure_windows_hyperv_is_disable_when_up_or_reload()
   if( ARGV[ 0 ] == "up" || ARGV[ 0 ] == "reload" )
     if Vagrant::Util::Platform.windows? then
       if not system "powershell -ExecutionPolicy ByPass ./WindowsHyperVDeactivation.ps1"
@@ -31,8 +30,9 @@ Vagrant.configure( "2" ) do | config |
       end
     end
   end
+end
 
-  # install all required plugins then, restart vagrant process
+def install_required_plugins()
   required_plugins = %w( vagrant-vbguest )
   plugins_to_install = required_plugins.select { | plugin | not Vagrant.has_plugin? plugin }
 
@@ -44,18 +44,25 @@ Vagrant.configure( "2" ) do | config |
       abort "Installation of one or more required plugins has failed. Aborting."
     end
   end
+end
 
-  config_file_name = 'config.yaml'
-
-  if not FileTest::file?( './config.yaml' )
+def read_configuration( config_file_name )
+  if not FileTest::file?( config_file_name )
     puts "Information, no 'config.yaml' file found. Default value wile be used."
     puts "Consider to create your own config.yaml file from the config.yaml.dist "
     puts "template."
 
-    config_file_name = "#{ config_file_name }.dist"
+    return YAML.load_file( "#{ config_file_name }.dist" )
   end
 
-  configuration = YAML.load_file( config_file_name )
+  return YAML.load_file( config_file_name )
+end
+
+ensure_windows_hyperv_is_disable_when_up_or_reload()
+install_required_plugins()
+
+Vagrant.configure( "2" ) do | config |
+  configuration = read_configuration( 'config.yaml' )
 
   # install all extra plugins then, restart vagrant process
   extra_plugins = configuration[ 'vagrant' ][ 'extra_plugins' ]
