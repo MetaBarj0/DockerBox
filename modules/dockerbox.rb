@@ -101,9 +101,11 @@ module DockerBox
         return @single_machine.cpu
       end
 
-      if @multi_machine.cpus[ index ] && ( @multi_machine.cpus[ index ] > 0 )
+      if @multi_machine.cpus && @multi_machine.cpus[ index ] && ( @multi_machine.cpus[ index ] > 0 )
         return @multi_machine.cpus[ index ]
       end
+
+      return @single_machine.cpu
     end
 
     def get_machine_cpu_cap( index )
@@ -111,9 +113,11 @@ module DockerBox
         return @single_machine.cpu_cap
       end
 
-      if @multi_machine.cpu_caps[ index ] && ( @multi_machine.cpu_caps[ index ] > 0 )
+      if @multi_machine.cpu_caps && @multi_machine.cpu_caps[ index ] && ( @multi_machine.cpu_caps[ index ] > 0 )
         return @multi_machine.cpu_caps[ index ]
       end
+
+      return @single_machine.cpu_cap
     end
 
     def get_machine_memory( index )
@@ -121,9 +125,11 @@ module DockerBox
         return @single_machine.memory
       end
 
-      if @multi_machine.memories[ index ] && ( @multi_machine.memories[ index ] > 0 )
+      if @multi_machine.memories && @multi_machine.memories[ index ] && ( @multi_machine.memories[ index ] > 0 )
         return @multi_machine.memories[ index ]
       end
+
+      return @single_machine.memory
     end
 
     def provisioning_properties()

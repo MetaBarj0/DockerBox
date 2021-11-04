@@ -41,11 +41,6 @@ single_machine:
   # boolean : true connect this machine to a bridged network, making it reachable
   # false to not create a public_network
   # default : false
-  # warning : in multi machine mode, this setting is not working properly due to
-  # a bug in Vagrant preventing machine to boot. As a workaround you can add the
-  # public network on the machine manually using hypervisor features or better,
-  # set a private network all machine in the setup to properly communicate with
-  # each other
   create_public_network: false
 
   # Forwarding rules allowing packet redirections from host to guest
@@ -191,20 +186,25 @@ multi_machine:
   # will be provided the same amount of resource (cpu, cpu cap and memory) as
   # specified in machine_cpu, machine_cpu_cap and machine_memory variables by
   # default. By default this mode is disabled as the value of this variable is
-  # null. To enable the multi machine mode, at least 2 IP addresses must be
-  # specified.
+  # null. To enable the multi machine mode, at least 2 class C IP addresses must
+  # be specified.
   # list : a set of IP addresses
   # default : null
   # example:
   # ip_addresses:
-  # - 10.0.2.1
-  # - 10.0.2.2
-  # - 10.0.2.3
+  # - 10.0.3.1
+  # - 10.0.3.2
+  # - 10.0.3.3
   # note : a null value means the multi machine mode is disabled. Specifying
-  # only 1 IP address means a normal machine setup leaving the multi machine mode
-  # disabled.
-  # warning : at least 2 IP addresses must be specified for a valid multi machine
-  # setup
+  #        only 1 IP address means a single machine setup leaving the multi
+  #        machine mode disabled.
+  # note : at least 2 IP addresses must be specified for a valid multi machine
+  #        setup
+  # warning: ensure specified ip addresses network does not overlap with the
+  #          default NAT network assigned to the first VM NIC adapter. By
+  #          default the address space of the NAT adapter is 10.0.2.0/24.
+  #          You can verify the eth0 address space by using the ifconfig command
+  #          within the guest machine
   ip_addresses:
 
   # Indicates if a machine of a multi machine mode have its own public network,
@@ -222,10 +222,6 @@ multi_machine:
   # - false
   # will enable a public network only for the second machine, not the first nor
   # the last.
-  # warning : currently unsupported. It looks like a bug in vagrant prevent this
-  # setting to work at all and prevent the multi machine setup to work.
-  # However, it's been a while since this setting has been created, it could be
-  # wise to ensure this feature is still unsupported.
   create_public_network:
 
   # Indicates if a machine of a multi machine setup shares same synced folders
