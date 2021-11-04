@@ -254,5 +254,24 @@ module DockerBox
     def multi_machine_have_shared_synced_folders( index )
       return @multi_machine.shared_synced_folders[ index ]
     end
+
+    def install_plugin_dependencies( plugins )
+      repair_plugin_dependencies()
+
+      system "vagrant plugin install #{ plugins.join( ' ' ) }"
+      system "vagrant plugin update"
+    end
+
+    def repair_plugin_dependencies()
+      if system "vagrant plugin list"
+        return true
+      end
+ 
+      if not system "vagrant plugin repair"
+        return system "vagrant plugin expunge --reinstall "
+      end
+  
+     return true
+   end
   end
 end
